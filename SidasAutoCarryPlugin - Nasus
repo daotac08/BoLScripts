@@ -82,12 +82,9 @@ function SmartKS()
                         if AutoCarry.PluginMenu.ks then
                                 if enemy.health <= (qDmg) and GetDistance(enemy) <= qRange and QREADY then
                                         if QREADY then CastSpell(_Q, enemy) end
-                                                                                         
-                                elseif enemy.health <= (qDmg + eDmg) and GetDistance(enemy) <= eRange and EREADY and QREADY then
-                                        if EREADY then CastSpell(_E, enemy.x, enemy.z) end
-                                        if QREADY then CastSpell(_Q, enemy) end
+                                                                                
                                 
-                                elseif enemy.health <= (qDmg + itemsDmg) and GetDistance(enemy) <= qRange and QREADY then
+                               elseif enemy.health <= (qDmg + itemsDmg) and GetDistance(enemy) <= qRange and QREADY then
                                         if DFGREADY then CastSpell(dfgSlot, enemy) end
                                         if HXGREADY then CastSpell(hxgSlot, enemy) end
                                         if BWCREADY then CastSpell(bwcSlot, enemy) end
