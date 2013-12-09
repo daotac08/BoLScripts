@@ -1,10 +1,11 @@
---[[ JustNasus by Galaxix 1.0
+--[[ JustNasus by Galaxix 
 
 Thanks Kain, Skeem and Trees.
 
 Changelog :
    1.0    - Initial Release
    1.1    - Fixed errors and bugs
+   1.2    - Added Auto Ultimate function
 
 ]]--
 
