@@ -48,6 +48,24 @@ if Minion and not Minion.type == "obj_Turret" and not Minion.dead and GetDistanc
 
 --end q farm
 
+-- Auto ult
+
+function AutoUlt()
+        if RREADY and not myHero.dead then
+                if myHero.health <= myHero.maxHealth*(AutoCarry.PluginMenu.rHealth/100) then
+                        if Target or TargetHaveBuff("SummonerDot", myHero) then
+                                CastSpell(_R)
+                        end
+                elseif myHero.health <= myHero.maxHealth*((AutoCarry.PluginMenu.rHealth*1.5)/100) and inTurretRange(myHero) then
+                        CastSpell(_R)
+                end
+        end
+end
+
+
+--end auto ult
+
+
 --Combo
 function Combo()
         if Target then
@@ -223,7 +241,8 @@ function menuMain()
                 AutoCarry.PluginMenu:addParam("cDraw", "Draw Enemy Text", SCRIPT_PARAM_ONOFF, true)
                 AutoCarry.PluginMenu:addParam("sep6", "-- Misc --", SCRIPT_PARAM_INFO, "")
                 AutoCarry.PluginMenu:addParam("MinMana", "Minimum Mana for Q Farm %", SCRIPT_PARAM_SLICE, 40, 0, 100, 2)  
-                AutoCarry.PluginMenu:addParam("aHP", "Auto Health Pots", SCRIPT_PARAM_ONOFF, true)         
+                AutoCarry.PluginMenu:addParam("aHP", "Auto Health Pots", SCRIPT_PARAM_ONOFF, true)
+                AutoCarry.PluginMenu:addParam("rHealth", "Auto R - Min Health(%)", SCRIPT_PARAM_SLICE, 20, 0, 100, 0)
                 AutoCarry.PluginMenu:addParam("aMP", "Auto Auto Mana Pots", SCRIPT_PARAM_ONOFF, true) 
                 AutoCarry.PluginMenu:addParam("HPHealth", "Min % for Health Pots", SCRIPT_PARAM_SLICE, 50, 0, 100, 2)
                 
