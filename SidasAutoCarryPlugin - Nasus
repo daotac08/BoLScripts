@@ -71,7 +71,8 @@ function SmartKS()
                 if ValidTarget(enemy) then
                         dfgDmg, hxgDmg, bwcDmg, iDmg  = 0, 0, 0, 0
                         qDmg = getDmg("Q",enemy,myHero)
-            wDmg = getDmg("W",enemy,myHero)
+                        eDmg = getDmg("E",enemy,myHero)
+                        wDmg = getDmg("W",enemy,myHero)
                         rDmg = getDmg("R",enemy,myHero)
                         if DFGREADY then dfgDmg = (dfgSlot and getDmg("DFG",enemy,myHero) or 0)        end
             if HXGREADY then hxgDmg = (hxgSlot and getDmg("HXG",enemy,myHero) or 0) end
