@@ -6,7 +6,7 @@ Changelog :
    1.0    - Initial Release
    1.1    - Fixed errors and bugs
    1.2    - Added Auto Ultimate function
-   1.3    - Fixed combo and added Jungle Clear
+   1.3    - Fixed combo and added Jungle Clear, Auto Ultimate
 
 ]]--
 
