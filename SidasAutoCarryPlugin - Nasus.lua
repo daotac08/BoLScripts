@@ -6,6 +6,7 @@ Changelog :
    1.0    - Initial Release
    1.1    - Fixed errors and bugs
    1.2    - Added Auto Ultimate function
+   1.3    - Fixed combo and added Jungle Clear
 
 ]]--
 
@@ -16,23 +17,26 @@ function PluginOnTick()
         SmartKS()
         UseConsumables()
     if AutoCarry.PluginMenu.ks then SmartKS() end
-    if not IsMyManaLow() and AutoCarry.PluginMenu.qFarm and AutoCarry.MainMenu.LastHit and not AutoCarry.MainMenu.AutoCarry then qFarm()
+    if AutoCarry.MainMenu.LaneClear then JungleClear() end
+    if QREADY and AutoCarry.PluginMenu.qFarm and AutoCarry.MainMenu.LastHit and not AutoCarry.MainMenu.AutoCarry then qFarm() end
 	if AutoCarry.MainMenu.AutoCarry then Combo() end
 	if AutoCarry.MainMenu.MixedMode and AutoCarry.PluginMenu.qHarass and QREADY and GetDistance(Target) <= qRange then CastSpell(_Q, Target) end
 end
-end
+
 
 function PluginOnLoad()
         
         loadMain() -- Loads Global Variables
         menuMain() -- Loads AllClass Menu
+        PrintChat(">> JustNasus Loaded <<")
 end
 
 --q Farm
            
 function qFarm()
 itemDamage = (SheenSlot and hitdamage or 0) + (TrinitySlot and hitdamage*1.5 or 0) + (LichBaneSlot and getDmg("LICHBANE",enemy,myHero) or 0) + (IceBornSlot and hitdamage*1.25 or 0)
-if Minion and not Minion.type == "obj_Turret" and not Minion.dead and GetDistance(Minion) <= qRange and Minion.health < getDmg("Q", minion, myHero)+getDmg("AD", minion, myHero) + itemDamage then
+if not IsMyManaLow() then
+		if Minion and not Minion.type == "obj_Turret" and not Minion.dead and GetDistance(Minion) <= qRange and Minion.health < getDmg("Q", minion, myHero)+getDmg("AD", minion, myHero) then
                         CastSpell(_Q, Minion.x, Minion.z)
                         myHero:Attack(minion)
                         AutoCarry.shotFired = true
@@ -46,26 +50,49 @@ if Minion and not Minion.type == "obj_Turret" and not Minion.dead and GetDistanc
                         end
                 end
         end
-
+      
+  end
 --end q farm
 
 -- Auto ult
 
 function AutoUlt()
         if RREADY and not myHero.dead then
-                if myHero.health <= myHero.maxHealth*(AutoCarry.PluginMenu.rHealth/100) then
-                        if Target or TargetHaveBuff("SummonerDot", myHero) then
-                                CastSpell(_R)
-                        end
-                elseif myHero.health <= myHero.maxHealth*((AutoCarry.PluginMenu.rHealth*1.5)/100) and inTurretRange(myHero) then
-                        CastSpell(_R)
-                end
+local MinimumEnemies = AutoCarry.PluginMenu.MinimumEnemies
+local EnemiesRange = AutoCarry.PluginMenu.MinimumRange
+local MyHealthPercent = ((myHero.health/myHero.maxHealth)*100)
+local MinimumHealth = AutoCarry.PluginMenu.MinimumHealth
+        if (CountEnemyHeroInRange(EnemiesRange) >= MinimumEnemies) and (MyHealthPercent <= MinimumHealth) and rReady then
+                CastSpell(_R)
         end
+        if (CountEnemyHeroInRange(EnemiesRange) >= 1) and not myHero.canMove and (MyHealthPercent <= MinimumHealth) and rReady then
+                CastSpell(_R)
+        end        
 end
+                end
+        
+
 
 
 --end auto ult
 
+--Jungle clear
+
+function JungleClear()
+        if IsSACReborn then
+                JungleMob = AutoCarry.Jungle:GetAttackableMonster()
+        else
+                JungleMob = AutoCarry.GetMinionTarget()
+        end
+        if JungleMob ~= nil and not IsMyManaLow() then
+                if EREADY and AutoCarry.PluginMenu.JungleE and GetDistance(JungleMob) <= eRange then CastSpell(_E, JungleMob) end
+                if QREADY and AutoCarry.PluginMenu.JungleQ and GetDistance(JungleMob) <= qRange then CastSpell(_Q, JungleMob) end
+                               
+        end
+end
+
+
+--end jungle clear
 
 --Combo
 function Combo()
@@ -75,12 +102,13 @@ function Combo()
                 if BWCREADY then CastSpell(bwcSlot, Target) end
                 if BRKREADY then CastSpell(brkSlot, Target) end
                                         
-                if WREADY and AutoCarry.PluginMenu.useW and GetDistance(Target) <= wRange then CastSpell(_W) end
-                if EREADY and AutoCarry.PluginMenu.useE and GetDistance(Target) <= eRange then CastSpell(_E, enemy.x, enemy.z) end
-                if QREADY and AutoCarry.PluginMenu.useQ and GetDistance(Target) <= qRange then CastSpell(_Q) end
+                if WREADY and AutoCarry.PluginMenu.useW and GetDistance(Target) <= wRange then CastSpell(_W, Target) end
+                if EREADY and AutoCarry.PluginMenu.useE and GetDistance(Target) <= eRange then CastSpell(_E, Target.x, Target.z) end
+                if QREADY and AutoCarry.PluginMenu.useQ and GetDistance(Target) <= qRange then CastSpell(_Q, Target) end
                 if RREADY and AutoCarry.PluginMenu.useR and GetDistance(Target) <= rRange then CastSpell(_R) end
         end
 end
+
 --end Combo Function
 
 
@@ -231,6 +259,9 @@ function menuMain()
                 AutoCarry.PluginMenu:addParam("useE", "Use (E) in Combo", SCRIPT_PARAM_ONOFF, true)
                 AutoCarry.PluginMenu:addParam("useR", "Use (R) in Combo", SCRIPT_PARAM_ONOFF, false)
                 AutoCarry.PluginMenu:addParam("AutoUltimate", "Auto (R)", SCRIPT_PARAM_ONKEYTOGGLE, true, HK2)
+                AutoCarry.PluginMenu:addParam("MinimumHealth", "Minimum Health % for R", SCRIPT_PARAM_SLICE, 45, 1, 100, 0)
+                AutoCarry.PluginMenu:addParam("MinimumEnemies", "Minimum Enemies for R", SCRIPT_PARAM_SLICE, 2, 1, 5, 0)
+                AutoCarry.PluginMenu:addParam("MinimumRange", "Minimum Range for R", SCRIPT_PARAM_SLICE, 650, 200, 1000, -1)
                 AutoCarry.PluginMenu:addParam("sep2", "-- Mixed Mode Options --", SCRIPT_PARAM_INFO, "")
                 AutoCarry.PluginMenu:addParam("qHarass", "Use (Q)to Harass", SCRIPT_PARAM_ONOFF, true, HK3)
                 AutoCarry.PluginMenu:addParam("sep3", "-- KS Options --", SCRIPT_PARAM_INFO, "")
@@ -240,12 +271,15 @@ function menuMain()
                 AutoCarry.PluginMenu:addParam("qDraw", "Draw (E)", SCRIPT_PARAM_ONOFF, true)
                 AutoCarry.PluginMenu:addParam("DrawTarget", "Draw Target", SCRIPT_PARAM_ONOFF, true)
                 AutoCarry.PluginMenu:addParam("cDraw", "Draw Enemy Text", SCRIPT_PARAM_ONOFF, true)
-                AutoCarry.PluginMenu:addParam("sep6", "-- Misc --", SCRIPT_PARAM_INFO, "")
+                AutoCarry.PluginMenu:addParam("sep6", "-- Misc Options --", SCRIPT_PARAM_INFO, "")
                 AutoCarry.PluginMenu:addParam("MinMana", "Minimum Mana for Q Farm %", SCRIPT_PARAM_SLICE, 40, 0, 100, 2)  
                 AutoCarry.PluginMenu:addParam("aHP", "Auto Health Pots", SCRIPT_PARAM_ONOFF, true)
                 AutoCarry.PluginMenu:addParam("rHealth", "Auto R - Min Health(%)", SCRIPT_PARAM_SLICE, 20, 0, 100, 0)
                 AutoCarry.PluginMenu:addParam("aMP", "Auto Auto Mana Pots", SCRIPT_PARAM_ONOFF, true) 
                 AutoCarry.PluginMenu:addParam("HPHealth", "Min % for Health Pots", SCRIPT_PARAM_SLICE, 50, 0, 100, 2)
+                AutoCarry.PluginMenu:addParam("sep7", "-- Jungle Clear Options --", SCRIPT_PARAM_INFO, "")
+                AutoCarry.PluginMenu:addParam("JungleQ", "Jungle with (Q)", SCRIPT_PARAM_ONOFF, true)
+                AutoCarry.PluginMenu:addParam("JungleE", "Jungle With (E)", SCRIPT_PARAM_ONOFF, true)
                 
                 end
  
