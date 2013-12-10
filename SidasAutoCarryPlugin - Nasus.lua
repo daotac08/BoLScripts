@@ -62,17 +62,14 @@ local MinimumEnemies = AutoCarry.PluginMenu.MinimumEnemies
 local EnemiesRange = AutoCarry.PluginMenu.MinimumRange
 local MyHealthPercent = ((myHero.health/myHero.maxHealth)*100)
 local MinimumHealth = AutoCarry.PluginMenu.MinimumHealth
-        if (CountEnemyHeroInRange(EnemiesRange) >= MinimumEnemies) and (MyHealthPercent <= MinimumHealth) and rReady then
+        if (CountEnemyHeroInRange(EnemiesRange) >= MinimumEnemies) and (MyHealthPercent <= MinimumHealth) and RREADY then
                 CastSpell(_R)
         end
-        if (CountEnemyHeroInRange(EnemiesRange) >= 1) and not myHero.canMove and (MyHealthPercent <= MinimumHealth) and rReady then
+        if (CountEnemyHeroInRange(EnemiesRange) >= 1) and not myHero.canMove and (MyHealthPercent <= MinimumHealth) and RREADY then
                 CastSpell(_R)
-        end        
-end
+                            end        
+                      end
                 end
-        
-
-
 
 --end auto ult
 
