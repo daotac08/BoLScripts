@@ -6,7 +6,7 @@ Changelog :
    1.0    - Initial Release
    1.1    - Fixed errors and bugs
    1.2    - Added Auto Ultimate function
-   1.3    - Fixed combo and added Jungle Clear, Auto Ultimate
+   1.3    - Fixed combo and added Jungle Clear
 
 ]]--
 
@@ -34,24 +34,17 @@ end
 --q Farm
            
 function qFarm()
-itemDamage = (SheenSlot and hitdamage or 0) + (TrinitySlot and hitdamage*1.5 or 0) + (LichBaneSlot and getDmg("LICHBANE",enemy,myHero) or 0) + (IceBornSlot and hitdamage*1.25 or 0)
+itemsDmg = (SheenSlot and hitdamage or 0) + (TrinitySlot and hitdamage*1.5 or 0) + (LichBaneSlot and getDmg("LICHBANE",enemy,myHero) or 0) + (IceBornSlot and hitdamage*1.25 or 0)
 if not IsMyManaLow() then
-		if Minion and not Minion.type == "obj_Turret" and not Minion.dead and GetDistance(Minion) <= qRange and Minion.health < getDmg("Q", minion, myHero)+getDmg("AD", minion, myHero) then
-                        CastSpell(_Q, Minion.x, Minion.z)
-                        myHero:Attack(minion)
-                        AutoCarry.shotFired = true
-                else
-                        for _, minion in pairs(AutoCarry.EnemyMinions().objects) do
-                                if minion and not minion.dead and GetDistance(minion) <= qRange and minion.health < getDmg("Q", minion, myHero)+getDmg("AD", minion, myHero) then
-                                        CastSpell(_Q, minion.x, minion.z)
-                                        myHero:Attack(minion)
-                                        AutoCarry.shotFired = true
-                                end
+		if Minion and not Minion.type == "obj_Turret" and not Minion.dead and GetDistance(Minion) <= qRange and Minion.health <= qDamage(minion) then
+                        CastSpell(_Q, minion)
+                                                AutoCarry.shotFired = true
+                              end
                         end
                 end
-        end
-      
-  end
+     
+   
+
 --end q farm
 
 -- Auto ult
@@ -223,6 +216,17 @@ end
 
 --end
 
+
+--QDamage thanks HEX
+
+function qDamage(target)
+        local qDmg = getDmg("Q", target, myHero) + getDmg("AD", target, myHero)
+        local bDmg = ((SheenSlot and getDmg("SHEEN", target, myHero) or 0)+(TrinitySlot and getDmg("TRINITY", target, myHero) or 0)+(IcebornSlot and getDmg("ICEBORN", target, myHero) or 0))-15
+        local totalQDmg = qDmg + bDmg + hitendmg
+        return totalQDmg
+end
+
+--
 
 
 function loadMain()
