@@ -79,12 +79,14 @@ function KS()
 
 --[Casting our Q ]--
 function CastQ(Target)
- if IsSACReborn and VIP_USER then
-    if QREADY then
-     SkillQ:Cast(Target) end
-    if QREADY then 
-		AutoCarry.CastSkillshot(SkillQ, Target)
-    end
+if IsSACReborn and VIP_USER then
+if QREADY then
+SkillQ:Cast(Target)
+end
+else
+if QREADY then
+        AutoCarry.CastSkillshot(SkillQ, Target)
+end
 end
 end
 
