@@ -77,7 +77,7 @@ function KS()
 --End 
 
 
---[Casting our Q into Enemies]--
+--[Casting our Q ]--
 function CastQ(Target)
  if IsSACReborn and VIP_USER then
     if QREADY then
