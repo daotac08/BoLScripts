@@ -1,7 +1,6 @@
 if myHero.charName ~= "Sivir" then return end
 if VIP_USER then
 	require "Prodiction"
-	Prodiction = ProdictManager.GetInstance()
 end
 
 --[Function When Plugin Loads]--
