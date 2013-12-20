@@ -1,3 +1,13 @@
+--[[
+
+AutoCarry Plugin - Sivir, 1.0 by Galaxix
+
+Thanks Kain, Skeem, Trees
+        Changelog :
+   1.0    - Initial Release
+        ]] --
+           
+
 if myHero.charName ~= "Sivir" then return end
 if VIP_USER then
 	require "Prodiction"
