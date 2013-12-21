@@ -5,6 +5,7 @@ AutoCarry Plugin - Sivir, 1.0 by Galaxix
 Thanks Kain, Skeem, Trees
         Changelog :
    1.0    - Initial Release
+   1.1    - Fixed bugs and add OnAttacked function thanks "fbragequit"
         ]] --
            
 
@@ -27,8 +28,7 @@ end
 --[Plugin OnTick]--
 
 function PluginOnTick()
-	if Recall then return end
-                Checks()
+	            Checks()
                 KS()
                 UseConsumables()
 	if IsSACReborn then
@@ -128,6 +128,12 @@ function OnDraw()
 end
 
 --End
+
+function OnAttacked()
+	if myHero:CanUseSpell(_W) and AutoCarry.MainMenu.AutoCarry then
+		CastSpell(_W)
+	end
+end
 
 function UseConsumables()
         if not InFountain() and not Recalling and Target ~= nil then
