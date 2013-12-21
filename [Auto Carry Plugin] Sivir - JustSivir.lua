@@ -95,7 +95,7 @@ SkillQ:Cast(Target)
 end
 else
 if QREADY then
-        AutoCarry.CastSkillshot(SkillQ, Target)
+        CastSpell(_Q, enemy.x, enemy.z)
 end
 end
 end
