@@ -45,6 +45,7 @@
 		
 		Changelog:
 			1.0 - Initial Release
+			1.1 - Fixed eDmg and qPos errors. Added Q and E skills range color.
 
 	]]--
 
@@ -59,7 +60,7 @@ require "Collision"
 function OnLoad()
 	Variables()		
 	AhriMenu()
-	PrintChat("<font color='#FF1493'> >> PROAhri by Galaxix v1.0 Loaded ! <<</font>")
+	PrintChat("<font color='#FF1493'> >> PROAhri by Galaxix v1.1 Loaded ! <<</font>")
 end
 
 -- OnTick Function --
@@ -208,6 +209,8 @@ function AhriMenu()
 		AhriMenu.drawing:addParam("wDraw", "Draw "..wName.." (W) Range", SCRIPT_PARAM_ONOFF, false)
 		AhriMenu.drawing:addParam("eDraw", "Draw "..eName.." (E) Range", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.drawing:addParam("rDraw", "Draw "..rName.." (R) Range", SCRIPT_PARAM_ONOFF, false)
+		AhriMenu.drawing:addParam("Qcolor", "Q Range Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
+	    AhriMenu.drawing:addParam("Ecolor", "E Range Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
 		AhriMenu.drawing:addParam("LfcDraw", "Use Lagfree Circles (Requires Reload!)", SCRIPT_PARAM_ONOFF, true)
 
 	AhriMenu:addSubMenu("["..myHero.charName.." - Misc Settings]", "misc")
@@ -434,7 +437,7 @@ function DamageCalcs()
 	local enemy = heroManager:GetHero(i)
 		if ValidTarget(enemy) then
 			dfgDmg, hxgDmg, bwcDmg, iDmg  = 0, 0, 0, 0
-			qDmg, wDmg, rDmg = 0, 0, 0
+			qDmg, wDmg, rDmg, eDmg = 0, 0, 0, 0
 			aDmg = getDmg("AD",enemy,myHero)
 			if qReady then qDmg = getDmg("Q", enemy, myHero) end
 			if wReady then wDmg = getDmg("W", enemy, myHero) end
@@ -523,13 +526,13 @@ function OnDraw()
 	-- Ranges --
 	if not AhriMenu.drawing.mDraw and not myHero.dead then
 		if qReady and AhriMenu.drawing.qDraw then
-			DrawCircle(myHero.x, myHero.y, myHero.z, qRange, ARGB(255,127,0,110))
+			DrawCircle2(myHero.x, myHero.y, myHero.z, qRange, ARGB(Menu.Drawing.Qcolor[1], Menu.Drawing.Qcolor[2], Menu.Drawing.Qcolor[3], Menu.Drawing.Qcolor[4] ))
 		end
 		if wReady and AhriMenu.drawing.wDraw then
 			DrawCircle(myHero.x, myHero.y, myHero.z, wRange, ARGB(255,95,159,159))
 		end
 		if eReady and AhriMenu.drawing.eDraw then
-			DrawCircle(myHero.x, myHero.y, myHero.z, eRange, ARGB(255,204,50,50))
+			DrawCircle2(myHero.x, myHero.y, myHero.z, eRange, ARGB(Menu.Drawing.Ecolor[1], Menu.Drawing.Ecolor[2], Menu.Drawing.Ecolor[3], Menu.Drawing.Ecolor[4] ))
 		end
 		if rReady and AhriMenu.drawing.rDraw then
 			DrawCircle(myHero.x, myHero.y, myHero.z, rRange, ARGB(255,69,139,0))
