@@ -45,7 +45,7 @@
 		
 		Changelog:
 			1.0 - Initial Release
-			1.1 - Fixed eDmg and qPos errors. Added Q and E skills range color.
+			1.1 - Fixed eDmg
 
 	]]--
 
@@ -60,7 +60,7 @@ require "Collision"
 function OnLoad()
 	Variables()		
 	AhriMenu()
-	PrintChat("<font color='#FF1493'> >> PROAhri by Galaxix v1.1 Loaded ! <<</font>")
+	PrintChat("<font color='#FF1493'> >> PROAhri by Galaxix v1.0 Loaded ! <<</font>")
 end
 
 -- OnTick Function --
@@ -98,7 +98,7 @@ function Variables()
     CollisionE = Collision(eRange, eSpeed, eDelay, eWidth)
 	hpReady, mpReady, fskReady, Recalling = false, false, false, false
 	usingHPot, usingMPot = false, false
-	TextList = {"Harass", "Rape Him", "Full Combo Kill"}
+	TextList = {"Harass", "Q Kill", "Q+W Kill", "Q+R Kill", "Q+E Kill", "Q+W+E+R Kill", "Q+W+E+Rx3 Kill"}
 	KillText = {}
 	waittxt = {} -- prevents UI lags, all credits to Dekaron
 	for i=1, heroManager.iCount do waittxt[i] = i*3 end
@@ -209,8 +209,6 @@ function AhriMenu()
 		AhriMenu.drawing:addParam("wDraw", "Draw "..wName.." (W) Range", SCRIPT_PARAM_ONOFF, false)
 		AhriMenu.drawing:addParam("eDraw", "Draw "..eName.." (E) Range", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.drawing:addParam("rDraw", "Draw "..rName.." (R) Range", SCRIPT_PARAM_ONOFF, false)
-		AhriMenu.drawing:addParam("Qcolor", "Q Range Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
-	    AhriMenu.drawing:addParam("Ecolor", "E Range Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
 		AhriMenu.drawing:addParam("LfcDraw", "Use Lagfree Circles (Requires Reload!)", SCRIPT_PARAM_ONOFF, true)
 
 	AhriMenu:addSubMenu("["..myHero.charName.." - Misc Settings]", "misc")
@@ -449,14 +447,20 @@ function DamageCalcs()
             if iReady then iDmg = (ignite and getDmg("IGNITE",enemy,myHero) or 0) end
             onspellDmg = (liandrysSlot and getDmg("LIANDRYS",enemy,myHero) or 0)+(blackfireSlot and getDmg("BLACKFIRE",enemy,myHero) or 0)
             extraDmg = dfgDmg + hxgDmg + bwcDmg + onspellDmg + iDmg
-            	KillText[i] = 1
-          	if enemy.health <= qDmg then
-          		KillText[i] = 2
-          	elseif enemy.health <= (qDmg + wDmg + eDmg) and enemy.health > qDmg and wDmg and eDmg then
-          		KillText[i] = 3
-          	elseif enemy.health <= (qDmg + wDmg + rDmg*3) and enemy.health > qDmg and wDmg and rDmg*3 then
-          		KillText[i] = 4	
-          	end	
+                   KillText[i] = 1
+                  if enemy.health <= qDmg then
+                          KillText[i] = 2
+                  elseif enemy.health <= (qDmg + wDmg) and enemy.health > qDmg and wDmg then
+                          KillText[i] = 3
+                  elseif enemy.health <= (qDmg + rDmg) and enemy.health > qDmg and rDmg then
+                          KillText[i] = 4
+                  elseif enemy.health <= (qDmg + eDmg) and enemy.health > qDmg and eDmg then
+                          KillText[i] = 5
+                  elseif enemy.health <= (qDmg + wDmg + eDmg + rDmg) and enemy.health > qDmg and eDmg and wDmg and rDmg then
+                          KillText[i] = 6
+                  elseif enemy.health <= (qDmg + wDmg + eDmg + rDmg*3) and enemy.health > qDmg and wDmg and eDmg and rDmg*3 then
+                          KillText[i] = 7        
+                   end        
         end
     end
 end
@@ -526,13 +530,13 @@ function OnDraw()
 	-- Ranges --
 	if not AhriMenu.drawing.mDraw and not myHero.dead then
 		if qReady and AhriMenu.drawing.qDraw then
-			DrawCircle2(myHero.x, myHero.y, myHero.z, qRange, ARGB(Menu.Drawing.Qcolor[1], Menu.Drawing.Qcolor[2], Menu.Drawing.Qcolor[3], Menu.Drawing.Qcolor[4] ))
+			DrawCircle(myHero.x, myHero.y, myHero.z, qRange, ARGB(255,127,0,110))
 		end
 		if wReady and AhriMenu.drawing.wDraw then
 			DrawCircle(myHero.x, myHero.y, myHero.z, wRange, ARGB(255,95,159,159))
 		end
 		if eReady and AhriMenu.drawing.eDraw then
-			DrawCircle2(myHero.x, myHero.y, myHero.z, eRange, ARGB(Menu.Drawing.Ecolor[1], Menu.Drawing.Ecolor[2], Menu.Drawing.Ecolor[3], Menu.Drawing.Ecolor[4] ))
+			DrawCircle(myHero.x, myHero.y, myHero.z, eRange, ARGB(255,204,50,50))
 		end
 		if rReady and AhriMenu.drawing.rDraw then
 			DrawCircle(myHero.x, myHero.y, myHero.z, rRange, ARGB(255,69,139,0))
@@ -678,7 +682,7 @@ function Checks()
 	enemyMinions:update()
 	
 	if ValidTarget(Target) then
-		qPos = ProdictQ:GetPrediction(Target)
+		QPos = ProdictQ:GetPrediction(Target)
 		ePos = ProdictE:GetPrediction(Target)
 		end
 	
