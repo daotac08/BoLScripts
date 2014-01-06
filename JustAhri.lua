@@ -41,27 +41,31 @@
 			-Skeem - BotHappy - ENTRYWAY 
 			-Manciuszz for orbwalking stuff
 			-barasia, vadash and viseversa for Lagfree Circles
-			-
+			- Aplle for helping
 		
 		Changelog:
 			1.0 - Initial Release
 			1.1 - Fixed eDmg
-			1.2 - Fixed QPos ( Thanks Apple )
+			1.2 Fixed QPos and Added VPrediction to Skills.
 
 	]]--
 
 -- Hero Name & VIP Check --
 if myHero.charName ~= "Ahri" or not VIP_USER then return end
 
--- require Prodiction and Collision by Klokje --
+local VP = nil
+
+-- require Prodiction and Collision by Klokje and VPPRED by Honda7 --
 require "Prodiction"
 require "Collision"
+require "VPrediction"
 
 -- OnLoad Function --
 function OnLoad()
 	Variables()		
 	AhriMenu()
-	PrintChat("<font color='#FF1493'> >> PROAhri by Galaxix v1.0 Loaded ! <<</font>")
+	VP = VPrediction()
+	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.2 Loaded ! <<</font>")
 end
 
 -- OnTick Function --
@@ -96,6 +100,8 @@ function Variables()
 	ProdictQ = Prodict:AddProdictionObject(_Q, qRange, qSpeed, qDelay, qWidth, myHero)
 	ProdictE = Prodict:AddProdictionObject(_E, eRange, eSpeed, eDelay, eWidth, myHero)
 	ProdictECol = nil
+	VP = nil
+	ProdictECol = Collision(eRange, eSpeed, eDelay, eWidth)
     CollisionE = Collision(eRange, eSpeed, eDelay, eWidth)
 	hpReady, mpReady, fskReady, Recalling = false, false, false, false
 	usingHPot, usingMPot = false, false
@@ -171,8 +177,10 @@ function AhriMenu()
 	AhriMenu:addSubMenu("["..myHero.charName.." - Combo Settings]", "combo")
 		AhriMenu.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 		AhriMenu.combo:addParam("comboQ", "Use "..qName.." (Q) in Combo", SCRIPT_PARAM_ONOFF, true)
+		AhriMenu.combo:addParam("accuracyQ", "Accuracy Slider", SCRIPT_PARAM_SLICE, 1, 0, 5, 0)
 		AhriMenu.combo:addParam("comboW", "Use "..wName.." (W) in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("comboE", "Use "..eName.." (E) in Combo", SCRIPT_PARAM_ONOFF, true)
+		AhriMenu.combo:addParam("accuracyE", "Accuracy Slider", SCRIPT_PARAM_SLICE, 1, 0, 5, 0)
 		AhriMenu.combo:addParam("comboR", "Use "..rName.." (R) in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("comboOrbwalk", "Orbwalk in Combo", SCRIPT_PARAM_ONOFF, true)
@@ -237,8 +245,8 @@ function Combo()
 	end
 	if Target ~= nil then
 		if AhriMenu.combo.comboItems then UseItems(Target) end
-		if AhriMenu.combo.comboR and rReady and GetDistance(Target) <= rRange then CastR(Target) end
 		if AhriMenu.combo.comboE and eReady and GetDistance(Target) <= eRange then CastE(Target) end
+		if AhriMenu.combo.comboR and rReady and GetDistance(Target) <= rRange then CastR(Target) end
 		if AhriMenu.combo.comboQ and qReady and GetDistance(Target) <= qRange then CastQ(Target) end
 		if AhriMenu.combo.comboW and wReady and GetDistance(Target) <= wRange then CastSpell(_W)
 		end
@@ -317,31 +325,21 @@ end
 -- Cast Q  --
 function CastQ(enemy)
 if GetDistance(enemy) - getHitBoxRadius(enemy)/2 < qRange and ValidTarget(enemy) then
-                QPos = ProdictQ:GetPrediction(enemy)
-                 if QPos then CastSpell(_Q, QPos.x, QPos.z)
-        end
-    end
-end
+ CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, 0.24, 50, 1670)
+ if AhriMenu.combo.accuracyQ > HitChance and GetDistance(CastPosition) <= 880 then
+           CastSpell(_Q, CastPosition.x, CastPosition.z)
+                    end
+                end
+           end
 
 -- Cast E --
 function CastE(enemy)
-        if not enemy then 
-                enemy = Target 
+        CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, 0.24, 80, 1535)
+        local willCollide = ProdictECol:GetMinionCollision(CastPosition, myHero)
+        if AhriMenu.combo.accuracyE < HitChance and not willCollide and GetDistance(CastPosition) <= 975 then
+            CastSpell(_E, CastPosition.x, CastPosition.z)
         end
-        if ValidTarget(enemy) then
-                if ePos ~= nil then
-                                if not CollisionE:GetMinionCollision(ePos, myHero) then
-                                        CastSpell(_E, ePos.x, ePos.z)
-                                end
-                        end
-                else
-                        local eCol = GetMinionCollision(myHero, enemy, eWidth, enemyMinions)
-                        if not eCol then 
-                                CastSpell(_E, enemy.x, enemy.z)
-                        end
-                end
-        end
-
+    end
 
 -- Cast R --
 function CastR(enemy)
