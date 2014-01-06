@@ -46,6 +46,7 @@
 		Changelog:
 			1.0 - Initial Release
 			1.1 - Fixed eDmg
+			1.2 - Fixed QPos ( Thanks Apple )
 
 	]]--
 
@@ -317,8 +318,9 @@ end
 function CastQ(enemy)
 if GetDistance(enemy) - getHitBoxRadius(enemy)/2 < qRange and ValidTarget(enemy) then
                 QPos = ProdictQ:GetPrediction(enemy)
-                CastSpell(_Q, QPos.x, QPos.z)
+                 if QPos then CastSpell(_Q, QPos.x, QPos.z)
         end
+    end
 end
 
 -- Cast E --
@@ -691,4 +693,3 @@ function Checks()
 		_G.DrawCircle = DrawCircle2
 	end
 end	
-
