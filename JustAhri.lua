@@ -1,4 +1,4 @@
---[[ Pro Ahri by Galaxix
+--[[ JustAhri by Galaxix
 
 	Features:
 			-Combo Settings:
@@ -41,7 +41,7 @@
 			-Skeem - BotHappy - ENTRYWAY 
 			-Manciuszz for orbwalking stuff
 			-barasia, vadash and viseversa for Lagfree Circles
-			- Aplle for helping
+			- Apple for helping
 		
 		Changelog:
 			1.0 - Initial Release
