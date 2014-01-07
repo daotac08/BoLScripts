@@ -7,14 +7,14 @@ Changelog :
    1.1    - Fixed errors and bugs
    1.2    - Added Auto Ultimate function
    1.3    - Fixed combo and added Jungle Clear
-   1.4    - Fixed last hit with (Q) [Perfect last hit ]
+   1.4 - 1.5    - Fixed last hit with (Q) [Perfect last hit ]
 
 ]]--
 
 if myHero.charName ~= "Nasus" or not VIP_USER then return end
 
 local QStack = 0
-local HasBuff = false
+local bHasBuff = false
 
 function PluginOnTick()
         Checks()
@@ -34,7 +34,7 @@ function PluginOnLoad()
         menuMain() -- Loads AllClass Menu
         AdvancedCallback:bind('OnGainBuff', function(unit, buff) OnGainBuff(unit, buff) end)
         AdvancedCallback:bind('OnLoseBuff', function(unit, buff) OnLoseBuff(unit, buff) end)
-        PrintChat(">> JustNasus Loaded <<")
+        PrintChat("<font color='#FF0033'> >> JustNasus [VIP] v1.5 by Galaxix Loaded ! <<</font>")
 end
 
 function OnGainBuff(unit,buff)
@@ -73,7 +73,7 @@ end
  
 --Q Farm
 function qFarm()
- if QREADY or HasBuff then
+if QREADY or bHasBuff then
                         AutoCarry.CanAttack = false
                         for _, minion in pairs(AutoCarry.EnemyMinions().objects)do
                                 if minion and not minion.dead and minion.health < QDamage(minion) then
@@ -85,9 +85,6 @@ function qFarm()
                         AutoCarry.CanAttack = true
                 end
         end
-end
-
-
 -- Auto ult
 function AutoUlt()
     if RREADY and not myHero.dead then
