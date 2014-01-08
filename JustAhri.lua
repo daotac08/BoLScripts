@@ -65,7 +65,7 @@ function OnLoad()
 	Variables()		
 	AhriMenu()
 	VP = VPrediction()
-	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.2.1 Test Version Loaded ! <<</font>")
+	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.2 Loaded ! <<</font>")
 end
 
 -- OnTick Function --
@@ -94,8 +94,8 @@ function Variables()
 	qRange, wRange, eRange, rRange = 880, 800, 975, 550
 	qName, wName, eName, rName = "Orb of Deception", "Fox-Fire", "Charm", "Spirit Rush"
 	qReady, wReady, eReady, rReady = false, false, false, false
-	qSpeed, qDelay, qWidth = 1660, 0.25, 50
-	eSpeed, eDelay, eWidth = 1535, 0.25, 80
+	qSpeed, qDelay, qWidth, qRadius = 1660, 0.25, 50, 100
+	eSpeed, eDelay, eWidth, eRadius = 1535, 0.25, 80, 60
 	Prodict = ProdictManager.GetInstance()
 	ProdictQ = Prodict:AddProdictionObject(_Q, qRange, qSpeed, qDelay, qWidth, myHero)
 	ProdictE = Prodict:AddProdictionObject(_E, eRange, eSpeed, eDelay, eWidth, myHero)
@@ -325,7 +325,7 @@ end
 
 -- Cast Q  --
 function CastQ(enemy)
- CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, qDelay, qwidth, qRange, qSpeed, myHero)
+ CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, qDelay, qRadius, qRange, qSpeed, myHero)
  if AhriMenu.combo.accuracyQ > HitChance and GetDistance(CastPosition) <= qRange then
            CastSpell(_Q, CastPosition.x, CastPosition.z)
                     end
@@ -333,7 +333,7 @@ function CastQ(enemy)
          
 -- Cast E --
 function CastE(enemy)
-        CastPosition,  HitChance, HeroPosition = VP:GetLineCastPosition(Target, eDelay, eWidth, eRange, eSpeed, myHero)
+        CastPosition,  HitChance, HeroPosition = VP:GetLineCastPosition(Target, eDelay, eRadius, eRange, eSpeed, myHero)
         --local willCollide = ProdictECol:GetMinionCollision(CastPosition, myHero)
         local Mcol = CollisionE:GetMinionCollision(myHero, CastPosition)
         if AhriMenu.combo.accuracyE < HitChance and not Mcol and GetDistance(CastPosition) <= eRange then
