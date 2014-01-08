@@ -218,6 +218,7 @@ function AhriMenu()
 		AhriMenu.drawing:addParam("wDraw", "Draw "..wName.." (W) Range", SCRIPT_PARAM_ONOFF, false)
 		AhriMenu.drawing:addParam("eDraw", "Draw "..eName.." (E) Range", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.drawing:addParam("rDraw", "Draw "..rName.." (R) Range", SCRIPT_PARAM_ONOFF, false)
+		AhriMenu.drawing:addParam("DrawP", "Draw Ppredicted Position", SCRIPT_PARAM_ONOFF, false)
 		AhriMenu.drawing:addParam("LfcDraw", "Use Lagfree Circles (Requires Reload!)", SCRIPT_PARAM_ONOFF, true)
 
 	AhriMenu:addSubMenu("["..myHero.charName.." - Misc Settings]", "misc")
@@ -324,19 +325,18 @@ end
 
 -- Cast Q  --
 function CastQ(enemy)
-if GetDistance(enemy) - getHitBoxRadius(enemy)/2 < qRange and ValidTarget(enemy) then
- CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, 0.24, 50, 1670)
- if AhriMenu.combo.accuracyQ > HitChance and GetDistance(CastPosition) <= 880 then
+ CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, qDelay, qwidth, qRange, qSpeed, myHero)
+ if AhriMenu.combo.accuracyQ > HitChance and GetDistance(CastPosition) <= qRange then
            CastSpell(_Q, CastPosition.x, CastPosition.z)
                     end
                 end
-           end
-
+         
 -- Cast E --
 function CastE(enemy)
-        CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, 0.24, 80, 1535)
-        local willCollide = ProdictECol:GetMinionCollision(CastPosition, myHero)
-        if AhriMenu.combo.accuracyE < HitChance and not willCollide and GetDistance(CastPosition) <= 975 then
+        CastPosition,  HitChance, HeroPosition = VP:GetLineCastPosition(Target, eDelay, eWidth, eRange, eSpeed, myHero)
+        --local willCollide = ProdictECol:GetMinionCollision(CastPosition, myHero)
+        local Mcol = CollisionE:GetMinionCollision(myHero, CastPosition)
+        if AhriMenu.combo.accuracyE < HitChance and not Mcol and GetDistance(CastPosition) <= eRange then
             CastSpell(_E, CastPosition.x, CastPosition.z)
         end
     end
@@ -541,6 +541,11 @@ function OnDraw()
 		if rReady and AhriMenu.drawing.rDraw then
 			DrawCircle(myHero.x, myHero.y, myHero.z, rRange, ARGB(255,69,139,0))
 		end
+		if AhriMenu.drawing.DrawP and HeroPosition and CastPosition then
+		DrawCircle2(CastPosition.x, CastPosition.y, CastPosition.z, eWidth, ARGB(255, 255, 0, 0))
+		DrawCircle2(HeroPosition.x, HeroPosition.y, HeroPosition.z, eWidth, ARGB(255, 0, 0, 255))
+		
+	     end
 	end
 
 	-- Drawing Texts --
