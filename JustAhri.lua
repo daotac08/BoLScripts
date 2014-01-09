@@ -47,6 +47,7 @@
 			1.0 - Initial Release
 			1.1 - Fixed eDmg
 			1.2 Fixed QPos and Added VPrediction to Skills.
+			1.3 Fixed bugs.
 
 	]]--
 
@@ -65,7 +66,7 @@ function OnLoad()
 	Variables()		
 	AhriMenu()
 	VP = VPrediction()
-	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.2 Loaded ! <<</font>")
+	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.3 Loaded ! <<</font>")
 end
 
 -- OnTick Function --
@@ -324,15 +325,16 @@ function GetHitBoxRadius(target)
 end
 
 -- Cast Q  --
-function CastQ(enemy)
- CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, qDelay, qRadius, qRange, qSpeed, myHero)
- if AhriMenu.combo.accuracyQ > HitChance and GetDistance(CastPosition) <= qRange then
-           CastSpell(_Q, CastPosition.x, CastPosition.z)
-                    end
-                end
-         
+function CastQ(Target)
+ if qReady then
+  CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, qDelay, qWidth, qRange, qSpeed, myHero)
+  if AhriMenu.combo.accuracyQ > HitChance and GetDistance(CastPosition) <= qRange then
+     CastSpell(_Q, CastPosition.x, CastPosition.z)
+                      end
+                  end
+                  end
 -- Cast E --
-function CastE(enemy)
+function CastE(Target)
         CastPosition,  HitChance, HeroPosition = VP:GetLineCastPosition(Target, eDelay, eRadius, eRange, eSpeed, myHero)
         --local willCollide = ProdictECol:GetMinionCollision(CastPosition, myHero)
         local Mcol = CollisionE:GetMinionCollision(myHero, CastPosition)
@@ -342,7 +344,7 @@ function CastE(enemy)
     end
 
 -- Cast R --
-function CastR(enemy)
+function CastR(Target)
 	if rReady and ValidTarget(Target, rRange) then 
 		CastSpell(_R, mousePos.x, mousePos.z)
 	end
@@ -696,3 +698,5 @@ function Checks()
 		_G.DrawCircle = DrawCircle2
 	end
 end	
+
+PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.3 Loaded ! <<</font>")
