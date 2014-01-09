@@ -326,12 +326,14 @@ end
 
 -- Cast Q  --
 function CastQ(Target)
+ -- Cast Q  --
+function CastQ(Target)
  if qReady then
-  CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, qDelay, qWidth, qRange, qSpeed, myHero)
+  CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, qDelay, qRadius, qRange, qSpeed, myHero)
   if AhriMenu.combo.accuracyQ > HitChance and GetDistance(CastPosition) <= qRange then
      CastSpell(_Q, CastPosition.x, CastPosition.z)
-                      end
-                  end
+                        end
+                     end
                   end
 -- Cast E --
 function CastE(Target)
