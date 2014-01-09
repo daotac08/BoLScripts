@@ -326,8 +326,6 @@ end
 
 -- Cast Q  --
 function CastQ(Target)
- -- Cast Q  --
-function CastQ(Target)
  if qReady then
   CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, qDelay, qRadius, qRange, qSpeed, myHero)
   if AhriMenu.combo.accuracyQ > HitChance and GetDistance(CastPosition) <= qRange then
