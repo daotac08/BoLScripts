@@ -55,6 +55,7 @@
 if myHero.charName ~= "Ahri" or not VIP_USER then return end
 
 local VP = nil
+local Col = nil
 
 -- require Prodiction and Collision by Klokje and VPPRED by Honda7 --
 require "Prodiction"
@@ -66,7 +67,7 @@ function OnLoad()
 	Variables()		
 	AhriMenu()
 	VP = VPrediction()
-	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.3 Loaded ! <<</font>")
+	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.4 Loaded ! <<</font>")
 end
 
 -- OnTick Function --
@@ -102,8 +103,9 @@ function Variables()
 	ProdictE = Prodict:AddProdictionObject(_E, eRange, eSpeed, eDelay, eWidth, myHero)
 	ProdictECol = nil
 	VP = nil
+	Col = nil
 	ProdictECol = Collision(eRange, eSpeed, eDelay, eWidth)
-    CollisionE = Collision(eRange, eSpeed, eDelay, eWidth)
+    Col = Collision(eRange, eSpeed, eDelay, eWidth)
 	hpReady, mpReady, fskReady, Recalling = false, false, false, false
 	usingHPot, usingMPot = false, false
 	TextList = {"Harass", "Q Kill", "Q+W Kill", "Q+R Kill", "Q+E Kill", "Q+W+E+R Kill", "Q+W+E+Rx3 Kill"}
@@ -178,7 +180,6 @@ function AhriMenu()
 	AhriMenu:addSubMenu("["..myHero.charName.." - Combo Settings]", "combo")
 		AhriMenu.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 		AhriMenu.combo:addParam("comboQ", "Use "..qName.." (Q) in Combo", SCRIPT_PARAM_ONOFF, true)
-		AhriMenu.combo:addParam("accuracyQ", "Accuracy Slider", SCRIPT_PARAM_SLICE, 1, 0, 5, 0)
 		AhriMenu.combo:addParam("comboW", "Use "..wName.." (W) in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("comboE", "Use "..eName.." (E) in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("accuracyE", "Accuracy Slider", SCRIPT_PARAM_SLICE, 1, 0, 5, 0)
@@ -326,23 +327,30 @@ end
 
 -- Cast Q  --
 function CastQ(Target)
- if qReady then
-  CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, qDelay, qRadius, qRange, qSpeed, myHero)
-  if AhriMenu.combo.accuracyQ > HitChance and GetDistance(CastPosition) <= qRange then
-     CastSpell(_Q, CastPosition.x, CastPosition.z)
-                        end
-                     end
-                  end
+    CastPosition,  HitChance,  Position = VP:GetCircularCastPosition(Target, qDelay/1000, qRadius, qRange)
+	if HitChance < 2 then return end
+	local predictedpos = Vector(CastPosition.x, 0, CastPosition.z)
+	local mypos = Vector(myHero.x, 0, myHero.z)
+
+	if GetDistance(CastPosition) < qRange + qRadius then
+		if qReady then
+				CastSpell(_Q, CastPosition.x, CastPosition.z)
+			end
+		end
+	end
+
 -- Cast E --
 function CastE(Target)
-        CastPosition,  HitChance, HeroPosition = VP:GetLineCastPosition(Target, eDelay, eRadius, eRange, eSpeed, myHero)
-        --local willCollide = ProdictECol:GetMinionCollision(CastPosition, myHero)
-        local Mcol = CollisionE:GetMinionCollision(myHero, CastPosition)
-        if AhriMenu.combo.accuracyE < HitChance and not Mcol and GetDistance(CastPosition) <= eRange then
-            CastSpell(_E, CastPosition.x, CastPosition.z)
-        end
-    end
-
+       if Target and (myHero:CanUseSpell(_E) == READY) then
+		CastPosition,  HitChance, HeroPosition = VP:GetLineCastPosition(target, Qdelay, Qwidth, Qrange, Qspeed, myHero)
+		if HitChance > AhriMenu.combo.accuracyE and GetDistance(CastPosition) <= eRange  then
+			local Mcol = Col:GetMinionCollision(myHero, CastPosition)
+			if not Mcol then
+				CastSpell(_E, CastPosition.x,  CastPosition.z)
+			end
+		end
+	  end
+	end
 -- Cast R --
 function CastR(Target)
 	if rReady and ValidTarget(Target, rRange) then 
@@ -546,8 +554,7 @@ function OnDraw()
 		if AhriMenu.drawing.DrawP and HeroPosition and CastPosition then
 		DrawCircle2(CastPosition.x, CastPosition.y, CastPosition.z, eWidth, ARGB(255, 255, 0, 0))
 		DrawCircle2(HeroPosition.x, HeroPosition.y, HeroPosition.z, eWidth, ARGB(255, 0, 0, 255))
-		
-	     end
+		end
 	end
 
 	-- Drawing Texts --
@@ -699,4 +706,4 @@ function Checks()
 	end
 end	
 
-PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.3 Loaded ! <<</font>")
+PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.4 Loaded ! <<</font>")
