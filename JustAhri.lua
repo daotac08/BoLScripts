@@ -342,7 +342,7 @@ function CastQ(Target)
 -- Cast E --
 function CastE(Target)
        if Target and (myHero:CanUseSpell(_E) == READY) then
-		CastPosition,  HitChance, HeroPosition = VP:GetLineCastPosition(target, Qdelay, Qwidth, Qrange, Qspeed, myHero)
+		CastPosition,  HitChance, HeroPosition = VP:GetLineCastPosition(Target, eDelay, eWidth, eRange, eSpeed, myHero)
 		if HitChance > AhriMenu.combo.accuracyE and GetDistance(CastPosition) <= eRange  then
 			local Mcol = Col:GetMinionCollision(myHero, CastPosition)
 			if not Mcol then
