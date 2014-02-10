@@ -67,7 +67,7 @@ function OnLoad()
 	Variables()		
 	AhriMenu()
 	VP = VPrediction()
-	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.4 Loaded ! <<</font>")
+	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.5 Loaded ! <<</font>")
 end
 
 -- OnTick Function --
@@ -93,11 +93,11 @@ end
 
 -- Variables Function --
 function Variables()
-	qRange, wRange, eRange, rRange = 880, 800, 975, 550
+	qRange, wRange, eRange, rRange = 900, 800, 1000, 550
 	qName, wName, eName, rName = "Orb of Deception", "Fox-Fire", "Charm", "Spirit Rush"
 	qReady, wReady, eReady, rReady = false, false, false, false
-	qSpeed, qDelay, qWidth, qRadius = 1660, 0.25, 50, 100
-	eSpeed, eDelay, eWidth, eRadius = 1535, 0.25, 80, 60
+	qSpeed, qDelay, qWidth, qRadius = 2500, 0.25, 50, 100
+	eSpeed, eDelay, eWidth, eRadius = 1000, 0.25, 80, 60
 	Prodict = ProdictManager.GetInstance()
 	ProdictQ = Prodict:AddProdictionObject(_Q, qRange, qSpeed, qDelay, qWidth, myHero)
 	ProdictE = Prodict:AddProdictionObject(_E, eRange, eSpeed, eDelay, eWidth, myHero)
@@ -224,6 +224,7 @@ function AhriMenu()
 		AhriMenu.drawing:addParam("LfcDraw", "Use Lagfree Circles (Requires Reload!)", SCRIPT_PARAM_ONOFF, true)
 
 	AhriMenu:addSubMenu("["..myHero.charName.." - Misc Settings]", "misc")
+		AhriMenu.misc:addParam("UseProdiction", "Use - Prodiction (Needs Reload)", SCRIPT_PARAM_ONOFF, false)
 		AhriMenu.misc:addParam("aMP", "Auto Mana Pots", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.misc:addParam("aHP", "Auto Health Pots", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.misc:addParam("ZWItems", "Auto Zhonyas/Wooglets", SCRIPT_PARAM_ONOFF, true)
@@ -249,12 +250,12 @@ function Combo()
 	if Target ~= nil then
 		if AhriMenu.combo.comboItems then UseItems(Target) end
 		if AhriMenu.combo.comboE and eReady and GetDistance(Target) <= eRange then CastE(Target) end
-		if AhriMenu.combo.comboR and rReady and GetDistance(Target) <= rRange then CastR(Target) end
 		if AhriMenu.combo.comboQ and qReady and GetDistance(Target) <= qRange then CastQ(Target) end
-		if AhriMenu.combo.comboW and wReady and GetDistance(Target) <= wRange then CastSpell(_W)
+		if AhriMenu.combo.comboW and wReady and GetDistance(Target) <= wRange then CastSpell(_W) end
+		if AhriMenu.combo.comboR and rReady and GetDistance(Target) <= rRange then CastR(Target) end
 		end
 	end
-end
+
 
 -- Harass Function --
 function HarassCombo()
@@ -321,36 +322,55 @@ function GetJungleMob()
         end
 end
 
-function GetHitBoxRadius(target)
-        return GetDistance(target, target.minBBox)
+function GetHitBoxRadius(Target)
+        return GetDistance(Target, Target.minBBox)
 end
 
 -- Cast Q  --
 function CastQ(Target)
-    CastPosition,  HitChance,  Position = VP:GetCircularCastPosition(Target, qDelay/1000, qRadius, qRange)
-	if HitChance < 2 then return end
-	local predictedpos = Vector(CastPosition.x, 0, CastPosition.z)
-	local mypos = Vector(myHero.x, 0, myHero.z)
-
-	if GetDistance(CastPosition) < qRange + qRadius then
-		if qReady then
-				CastSpell(_Q, CastPosition.x, CastPosition.z)
+    if (myHero:CanUseSpell(_Q) == READY) then
+    for i, target in pairs(GetEnemyHeroes()) do
+    CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, qDelay, qWidth, qRange, qSpeed, myHero)
+	if HitChance >= 2 and GetDistance(CastPosition) <= qRange then
+	CastSpell(_Q, CastPosition.x, CastPosition.z)
+	
+	else
+	
+	if AhriMenu.misc.UseProdiction then
+	if Target and (myHero:CanUseSpell(_Q) == READY) then
+	if GetDistance(pos) - getHitBoxRadius(Target)/2 < qRange then
+	QPos = ProdictQ:GetPrediction(enemy)
+    CastSpell(_Q, QPos.x, QPos.z)
+    end
+	
 			end
-		end
+		 end
+	   end
 	end
-
+  end
+ end
 -- Cast E --
 function CastE(Target)
-       if Target and (myHero:CanUseSpell(_E) == READY) then
+       if (myHero:CanUseSpell(_E) == READY) then
 		CastPosition,  HitChance, HeroPosition = VP:GetLineCastPosition(Target, eDelay, eWidth, eRange, eSpeed, myHero)
-		if HitChance > AhriMenu.combo.accuracyE and GetDistance(CastPosition) <= eRange  then
+		if HitChance >= AhriMenu.combo.accuracyE and GetDistance(CastPosition) <= eRange  then
 			local Mcol = Col:GetMinionCollision(myHero, CastPosition)
 			if not Mcol then
 				CastSpell(_E, CastPosition.x,  CastPosition.z)
-			end
-		end
-	  end
+				
+				else
+		
+		if AhriMenu.misc.UseProdiction then
+		if GetDistance(pos) - getHitBoxRadius(Target)/2 < eRange then
+		local willCollide = ProdictECol:GetMinionCollision(pos, myHero)
+        if not willCollide then CastSpell(_E, pos.x, pos.z) end
+			       end
+		        end
+	         end
+	      end
+	    end
 	end
+
 -- Cast R --
 function CastR(Target)
 	if rReady and ValidTarget(Target, rRange) then 
@@ -551,11 +571,7 @@ function OnDraw()
 		if rReady and AhriMenu.drawing.rDraw then
 			DrawCircle(myHero.x, myHero.y, myHero.z, rRange, ARGB(255,69,139,0))
 		end
-		if AhriMenu.drawing.DrawP and HeroPosition and CastPosition then
-		DrawCircle2(CastPosition.x, CastPosition.y, CastPosition.z, eWidth, ARGB(255, 255, 0, 0))
-		DrawCircle2(HeroPosition.x, HeroPosition.y, HeroPosition.z, eWidth, ARGB(255, 0, 0, 255))
 		end
-	end
 
 	-- Drawing Texts --
 	if AhriMenu.drawing.cDraw then
@@ -706,4 +722,4 @@ function Checks()
 	end
 end	
 
-PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.4 Loaded ! <<</font>")
+PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.5 Loaded ! <<</font>")
