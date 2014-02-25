@@ -1,6 +1,7 @@
 ------#################################################################################------  ------###########################      Snowstorm Sivir     ############################------ ------###########################          by Toy          ############################------ ------#################################################################################------
  
 --> Version: 1.0 w/o IsShoting check (for rev 43)
+--> Version: 1.0.1 using VPredictioni changed Q Datas. ( by Galaxix )
  
 --> Features:
 --> Prodictions for Boomerang Blade (Q).
@@ -12,7 +13,7 @@
  
 if myHero.charName ~= "Sivir" then return end
  
-require "Prodiction"
+--require "Prodiction"
 require "VPrediction"
  
 -- Constants
