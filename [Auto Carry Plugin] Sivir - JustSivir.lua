@@ -5,27 +5,22 @@ AutoCarry Plugin - Sivir, 1.0 by Galaxix
 Thanks Kain, Skeem, Trees
         Changelog :
    1.0    - Initial Release
+   1.1    - Fixed And Changed a lot of thinks.
         ]] --
            
 
 if myHero.charName ~= "Sivir" then return end
 if VIP_USER then
-	require "Prodiction"
-end
+	require "VPrediction"
+ end
 
---[Function When Plugin Loads]--
 function PluginOnLoad()
         mainLoad() -- Loads our Variable Function
         mainMenu() -- Loads our Menu function
-          if IsSACReborn and VIP_USER then
-          SkillQ = AutoCarry.Skills:NewSkill(false, _Q, 1075, "Boomerang Blade", AutoCarry.SPELL_LINEAR, 0, false, false, 1.35, 250, 75, true)
-          else
- 	      SkillQ = {spellKey = _Q, range = 1075, speed = 1.35, delay = 250}
-          end
-end
+        SkillQ = {spellKey = _Q, range = 1075, speed = 1.35, delay = 249, width = 101}
+        end
 
 --[Plugin OnTick]--
-
 function PluginOnTick()
 	            Checks()
                 KS()
@@ -39,14 +34,12 @@ function PluginOnTick()
                 if Menu.KS then KS() end
 	            if Carry.MixedMode and Target then
                 if Menu.qHarass and not IsMyManaLow then CastQ(Target) end
-                if Menu.wHarass and not IsMyManaLow then CastSpell(_W) end
-                --if Menu.LaneClear then LCombo() later..
-                              
+                if Menu.wHarass and not IsMyManaLow then CastW2() end
+                if Menu.LaneClear then 
+                CastW() end
+                end
                   end
-				  end
-                
-             
-
+				  
 --[/OnTick]--
 
 function KS()
@@ -56,6 +49,7 @@ function KS()
                         dfgDmg, hxgDmg, bwcDmg, iDmg  = 0, 0, 0, 0
                         qDmg = getDmg("Q",enemy,myHero)
                         wDmg = getDmg("W",enemy,myHero)
+                        aDmg = getDmg("AD",enemy,myHero)
             if DFGREADY then dfgDmg = (dfgSlot and getDmg("DFG",enemy,myHero) or 0) end
             if HXGREADY then hxgDmg = (hxgSlot and getDmg("HXG",enemy,myHero) or 0) end
             if BWCREADY then bwcDmg = (bwcSlot and getDmg("BWC",enemy,myHero) or 0) end
@@ -66,8 +60,8 @@ function KS()
          if Target ~= nil then
          if QREADY and Target.health <= qDmg and Menu.ks and GetDistance(Target) <= qRange then
                         CastQ(Target)
-         elseif QREADY and WREADY and Target.health <= (qDmg + wDmg) and GetDistance(Target) <= qRange then
-                        CastSpell(_W)
+         elseif QREADY and WREADY and Target.health <= (qDmg + wDmg + aDmg) and GetDistance(Target) <= qRange then
+                        CastW2()
                         CastQ(Target)
                         
                         itemsDmg = dfgDmg + hxgDmg + bwcDmg + iDmg + onspellDmg
@@ -81,24 +75,37 @@ function KS()
              end
          end
      end
+ --end
  
-                        
---End 
+--Cast W For Combo
+function CastW()
+if WREADY and AutoCarry.PluginMenu.useW and AutoCarry.Orbwalker:IsAfterAttack() then CastSpell(_W)
+        end
+end
 
+--Cast W For Harras
+function CastW2()
+if WREADY and AutoCarry.PluginMenu.useW and GetDistance(Target) < 500 and AutoCarry.Orbwalker:IsAfterAttack() then CastSpell(_W)
+        end
+end
 
 --[Casting our Q ]--
 function CastQ(Target)
-if IsSACReborn and VIP_USER then
+if VIP_USER then
 if QREADY then
-SkillQ:Cast(Target)
-end
+  for i, target in pairs(GetEnemyHeroes()) do
+  CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, 0.25, 101, qRange, 1350, myHero)
+  if HitChance >= 2 and GetDistance(CastPosition) < 1075 then
+  CastSpell(_Q, CastPosition.x, CastPosition.z)
 else
 if QREADY then
         AutoCarry.CastSkillshot(SkillQ, Target)
 end
 end
 end
-
+end
+end
+end
 --End
 
 -- Function OnDraw --
@@ -125,7 +132,6 @@ function OnDraw()
                 end
         end
 end
-
 --End
 
 function UseConsumables()
@@ -149,10 +155,7 @@ function IsMyManaLow()
         return false
     end
 end
-
 --[/Low Mana Function by Kain]--
-
-
 --[Health Pots Function]--
 function NeedHP()
         if myHero.health < (myHero.maxHealth * ( Extras.HPHealth / 100)) then
@@ -161,15 +164,14 @@ function NeedHP()
                 return false
         end
 end
-
 --end
 
 --[[ Combo ]]--
 function FullCombo()
 	if Target then
 		if AutoCarry.MainMenu.AutoCarry then
-                        if GetDistance(Target) <= qRange and Menu.useQ then CastQ(Target) end
-                        if GetDistance(Target) <= wRange and Menu.useW then CastSpell(_W) end
+                        if GetDistance(Target) <= qRange and Menu.useQ then CastQ() end
+                        if GetDistance(Target) <= wRange and Menu.useW then CastW() end
                         if GetDistance(Target) <= rRange and Menu.useR then CastSpell(_R) end
 		end
 	end
@@ -230,9 +232,19 @@ function mainLoad()
                 Menu = AutoCarry.PluginMenu
                 Carry = AutoCarry.MainMenu
                 pReady, mpReady, fskReady = false, false, false
+                QREADY, WREADY, RREADY = false, false, false
                 qRange, wRange, rRange = 1075, 500, 1000
                 TextList = {"Harass him!!", "Q+W KILL!!", "FULL COMBO KILL!"}
                 KillText = {}
                 waittxt = {} -- prevents UI lags, all credits to Dekaron
                 for i=1, heroManager.iCount do waittxt[i] = i*3 end -- All credits to Dekaron
+                SkillQ = {spellKey = _Q, range = 1075, speed = 1.35, delay = 249, width = 101}
+               end
+               
+               if VIP_USER then
+		       if FileExist(SCRIPT_PATH..'Common/VPrediction.lua') then
+		       PrintChat("<font color='#009999'> >> JustSivir by Galaxix VIP Version v1.1 Loaded ! <<</font>")
+		       end
+               else
+               PrintChat("<font color='#009900'> >> JustSivir by Galaxix v1.1 Loaded ! <<</font>")
                end
