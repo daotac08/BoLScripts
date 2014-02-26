@@ -1,6 +1,6 @@
 --[[
 
-AutoCarry Plugin - Sivir, 1.0 by Galaxix
+AutoCarry Plugin - Sivir, 1.1 by Galaxix
 
 Thanks Kain, Skeem, Trees
         Changelog :
@@ -35,7 +35,7 @@ function PluginOnTick()
 	            if Carry.MixedMode and Target then
                 if Menu.qHarass and not IsMyManaLow then CastQ(Target) end
                 if Menu.wHarass and not IsMyManaLow then CastW2() end
-                if Menu.LaneClear then 
+                if Menu.LaneClear and not IsMyManaLow then 
                 CastW() end
                 end
                   end
