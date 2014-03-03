@@ -67,7 +67,7 @@ function OnLoad()
 	Variables()		
 	AhriMenu()
 	VP = VPrediction()
-	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.5 Loaded ! <<</font>")
+	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.6 Loaded ! <<</font>")
 end
 
 -- OnTick Function --
@@ -93,7 +93,7 @@ end
 
 -- Variables Function --
 function Variables()
-	qRange, wRange, eRange, rRange = 900, 800, 1000, 550
+	qRange, wRange, eRange, rRange = 900, 600, 900, 550
 	qName, wName, eName, rName = "Orb of Deception", "Fox-Fire", "Charm", "Spirit Rush"
 	qReady, wReady, eReady, rReady = false, false, false, false
 	qSpeed, qDelay, qWidth, qRadius = 2500, 0.25, 50, 100
@@ -186,6 +186,8 @@ function AhriMenu()
 		AhriMenu.combo:addParam("comboR", "Use "..rName.." (R) in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("comboOrbwalk", "Orbwalk in Combo", SCRIPT_PARAM_ONOFF, true)
+		AhriMenu.combo:addParam("RequireCharm","Require Charm (J)", SCRIPT_PARAM_ONKEYTOGGLE, true, string.byte("J"))
+		AhriMenu.combo:permaShow("RequireCharm")
 		AhriMenu.combo:permaShow("comboKey")
 
 	AhriMenu:addSubMenu("["..myHero.charName.." - Harass Settings]", "harass")
@@ -248,14 +250,15 @@ function Combo()
 		end
 	end
 	if Target ~= nil then
-		if AhriMenu.combo.comboItems then UseItems(Target) end
 		if AhriMenu.combo.comboE and eReady and GetDistance(Target) <= eRange then CastE(Target) end
+		if charmCheck() then return end
+		if AhriMenu.combo.comboItems then UseItems(Target) end
+		end
 		if AhriMenu.combo.comboQ and qReady and GetDistance(Target) <= qRange then CastQ(Target) end
 		if AhriMenu.combo.comboW and wReady and GetDistance(Target) <= wRange then CastSpell(_W) end
 		if AhriMenu.combo.comboR and rReady and GetDistance(Target) <= rRange then CastR(Target) end
 		end
-	end
-
+	   
 
 -- Harass Function --
 function HarassCombo()
@@ -268,6 +271,7 @@ function HarassCombo()
 	end
 	if Target ~= nil then
 		if AhriMenu.harass.harassE and eReady and GetDistance(Target) <= eRange then CastE(Target) end
+		if charmCheck() then return end
 		if AhriMenu.harass.harassQ and qReady and GetDistance(Target) <= qRange then CastQ(Target) end
 		if AhriMenu.harass.harassW and wReady and GetDistance(Target) <= wRange then CastSpell(_W) end
 		end
@@ -331,7 +335,7 @@ function CastQ(Target)
     if (myHero:CanUseSpell(_Q) == READY) then
     for i, target in pairs(GetEnemyHeroes()) do
     CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, qDelay, qWidth, qRange, qSpeed, myHero)
-	if HitChance >= 2 and GetDistance(CastPosition) <= qRange then
+	if HitChance > 1 and GetDistance(CastPosition) <= qRange then
 	CastSpell(_Q, CastPosition.x, CastPosition.z)
 	
 	else
@@ -401,23 +405,28 @@ function autoKs()
                         CastQ(Target)
                 elseif eReady and Target.health <= eDmg and GetDistance(Target) <= eRange then
                         CastE(Target)
+                        if charmCheck() then return end
                 elseif wReady and Target.health <= wDmg and GetDistance(Target) <= wRange then
                         CastSpell(_W, Target)
                 elseif qReady and eReady and Target.health <= (qDmg + eDmg) and GetDistance(Target) <= eRange then
                         CastE(Target)
+                        if charmCheck() then return end
                         CastQ(Target)
                 elseif qReady and wReady and Target.health <= (qDmg + wDmg) and GetDistance(Target) <= qRange then
                         CastQ(Target)
                         CastSpell(_W, Target)
                 elseif eReady and wReady and Target.health <= (eDmg + wDmg) and GetDistance(Target) <= eRange then
                         CastE(Target)
+                        if charmCheck() then return end
                         CastSpell(_W, Target)
                 elseif qReady and eReady and wReady and Target.health <= (qDmg + eDmg + wDmg) and GetDistance(Target) <= wRange then
                         CastE(Target)
+                        if charmCheck() then return end
                         CastQ(Target)
                         CastSpell(_W, Target)
                 elseif qReady and eReady and wReady and rReady and Target.health <= (qDmg + eDmg + wDmg + rDmg) and GetDistance(Target) <= rRange then
                         CastE(Target)
+                        if charmCheck() then return end
                         CastR(Target) 
                         CastQ(Target)
                         CastSpell(_W, Target)
@@ -552,6 +561,31 @@ function OnDeleteObj(obj)
 				table.remove(JungleFocusMobs, i)
 			end
 		end
+	end
+end
+
+function OnGainBuff(unit, buff)
+	if unit.isMe then
+		if buff.name == "AhriTumble" then
+			AhriTumbleActive = true
+		end
+	end
+end
+
+function OnLoseBuff(unit, buff)
+	if unit.isMe then
+		if buff.name == "AhriTumble" then
+			AhriTumbleActive = false
+		end
+	end
+end
+
+function charmCheck()
+	Checks()
+	if eReady and AhriMenu.combo.RequireCharm then 
+		return true
+	else
+		return false
 	end
 end
 
@@ -722,4 +756,4 @@ function Checks()
 	end
 end	
 
-PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.5 Loaded ! <<</font>")
+PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.6 Loaded ! <<</font>")
