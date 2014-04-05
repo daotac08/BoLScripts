@@ -252,7 +252,6 @@ function Combo()
 		if charmCheck() then return end
 		--PrintChat("<font color='#FF1493'> >> CharmCheck <<</font>")
 		if AhriMenu.combo.comboItems then UseItems(Target) end
-		end
 		if AhriMenu.combo.comboQ and qReady and GetDistance(Target) <= qRange then CastQ(Target) end
 		if AhriMenu.combo.comboW and wReady and GetDistance(Target) <= wRange then CastSpell(_W) end
 		if AhriMenu.combo.comboR and rReady and GetDistance(Target) <= rRange then CastR(Target) end
