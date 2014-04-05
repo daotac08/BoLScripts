@@ -257,7 +257,7 @@ function Combo()
 		if AhriMenu.combo.comboR and rReady and GetDistance(Target) <= rRange then CastR(Target) end
 		--PrintChat("<font color='#FF1493'> >> Combo <<</font>")
 		end
-	   
+	        end
 
 -- Harass Function --
 function HarassCombo()
