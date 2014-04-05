@@ -1,4 +1,4 @@
---[[ JustAhri by Galaxix
+--[[ JustAhri by Galaxix ALPHA Version
 
 	Features:
 			-Combo Settings:
@@ -48,14 +48,12 @@
 			1.1 - Fixed eDmg
 			1.2 Fixed QPos and Added VPrediction to Skills.
 			1.3 Fixed bugs.
+			1.7 Fixed errors.
 
 	]]--
 
 -- Hero Name & VIP Check --
 if myHero.charName ~= "Ahri" or not VIP_USER then return end
-
-local VP = nil
-local Col = nil
 
 -- require Prodiction and Collision by Klokje and VPPRED by Honda7 --
 require "Prodiction"
@@ -67,7 +65,7 @@ function OnLoad()
 	Variables()		
 	AhriMenu()
 	VP = VPrediction()
-	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.6 Loaded ! <<</font>")
+	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.7 ALPHA Loaded ! <<</font>")
 end
 
 -- OnTick Function --
@@ -93,11 +91,11 @@ end
 
 -- Variables Function --
 function Variables()
-	qRange, wRange, eRange, rRange = 900, 600, 900, 550
+	qRange, wRange, eRange, rRange = 880, 800, 975, 450
 	qName, wName, eName, rName = "Orb of Deception", "Fox-Fire", "Charm", "Spirit Rush"
 	qReady, wReady, eReady, rReady = false, false, false, false
-	qSpeed, qDelay, qWidth, qRadius = 2500, 0.25, 50, 100
-	eSpeed, eDelay, eWidth, eRadius = 1000, 0.25, 80, 60
+	qSpeed, qDelay, qWidth = 1100, 0.25, 100 
+	eSpeed, eDelay, eWidth = 1200, 0.25, 60
 	Prodict = ProdictManager.GetInstance()
 	ProdictQ = Prodict:AddProdictionObject(_Q, qRange, qSpeed, qDelay, qWidth, myHero)
 	ProdictE = Prodict:AddProdictionObject(_E, eRange, eSpeed, eDelay, eWidth, myHero)
@@ -249,14 +247,16 @@ function Combo()
 			moveToCursor()
 		end
 	end
-	if Target ~= nil then
+	if Target ~= nil and not Target.dead and ValidTarget(Target, 1200) then
 		if AhriMenu.combo.comboE and eReady and GetDistance(Target) <= eRange then CastE(Target) end
 		if charmCheck() then return end
+		--PrintChat("<font color='#FF1493'> >> CharmCheck <<</font>")
 		if AhriMenu.combo.comboItems then UseItems(Target) end
 		end
 		if AhriMenu.combo.comboQ and qReady and GetDistance(Target) <= qRange then CastQ(Target) end
 		if AhriMenu.combo.comboW and wReady and GetDistance(Target) <= wRange then CastSpell(_W) end
 		if AhriMenu.combo.comboR and rReady and GetDistance(Target) <= rRange then CastR(Target) end
+		--PrintChat("<font color='#FF1493'> >> Combo <<</font>")
 		end
 	   
 
@@ -269,11 +269,12 @@ function HarassCombo()
 			moveToCursor()
 		end
 	end
-	if Target ~= nil then
+	if Target ~= nil and not Target.dead and ValidTarget(Target, 1200) then
 		if AhriMenu.harass.harassE and eReady and GetDistance(Target) <= eRange then CastE(Target) end
 		if charmCheck() then return end
 		if AhriMenu.harass.harassQ and qReady and GetDistance(Target) <= qRange then CastQ(Target) end
 		if AhriMenu.harass.harassW and wReady and GetDistance(Target) <= wRange then CastSpell(_W) end
+--PrintChat("<font color='#FF1493'> >> Harras <<</font>")
 		end
 end
 
@@ -335,7 +336,7 @@ function CastQ(Target)
     if (myHero:CanUseSpell(_Q) == READY) then
     for i, target in pairs(GetEnemyHeroes()) do
     CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, qDelay, qWidth, qRange, qSpeed, myHero)
-	if HitChance > 1 and GetDistance(CastPosition) <= qRange then
+	if HitChance >= 2 and GetDistance(CastPosition) <= qRange then
 	CastSpell(_Q, CastPosition.x, CastPosition.z)
 	
 	else
@@ -387,7 +388,7 @@ function UseItems(enemy)
 	if not enemy then
 		enemy = Target
 	end
-	if Target ~= nil then
+	if Target ~= nil and not Target.dead and ValidTarget(Target, 750) then
 		if dfgReady and GetDistance(enemy) <= 750 then CastSpell(dfgSlot, enemy) end
 		if hxgReady and GetDistance(enemy) <= 600 then CastSpell(hxgSlot, enemy) end
 		if bwcReady and GetDistance(enemy) <= 450 then CastSpell(bwcSlot, enemy) end
@@ -399,7 +400,7 @@ end
 
 -- Killsteal Function -- 
 function autoKs()
-	if Target ~= nil then
+	if Target ~= nil and not Target.dead and ValidTarget(Target, 1200) then
 		if AhriMenu.ks.killsteal then
 		        if qReady and Target.health <= qDmg and GetDistance(Target) <= qRange then 
                         CastQ(Target)
@@ -756,4 +757,4 @@ function Checks()
 	end
 end	
 
-PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.6 Loaded ! <<</font>")
+PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.7 ALPHA Loaded ! <<</font>")
