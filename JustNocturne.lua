@@ -71,12 +71,12 @@ if AUTOUPDATE then
 end
 
 require "VPrediction"
-local RRange = GetRRange()
 
 -- OnLoad Function --
 function OnLoad()
 	Variables()		
 	Menu()
+	VP = VPrediction()
 	PrintChat("<font color='#330033'> >> JustNocturne by Galaxix v1.0 Loaded ! <<</font>")
 end
 
@@ -317,8 +317,8 @@ function GetJungleMob()
         end
 end
 
--- Cast E  --
-function CastE(Target)
+-- Cast Q  --
+function CastQ(Target)
 if Target and (myHero:CanUseSpell(_Q) == READY) then
 for i, Target in pairs(GetEnemyHeroes()) do
     CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, qDelay, qWidth, qRange, qSpeed, myHero)
@@ -486,7 +486,7 @@ function OnDraw()
 			DrawCircle(myHero.x, myHero.y, myHero.z, eRange, ARGB(255,204,50,50))
 		end
 		if rReady and Menu.drawing.rDraw then
-			DrawCircle(myHero.x, myHero.y, myHero.z, RRange, ARGB(255,69,139,0))
+			DrawCircle(myHero.x, myHero.y, myHero.z, RRange, 0x003333)
 		  end
 		end
 
