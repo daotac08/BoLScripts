@@ -55,6 +55,35 @@
 -- Hero Name & VIP Check --
 if myHero.charName ~= "Ahri" or not VIP_USER then return end
 
+local version = "1.000"
+
+local AUTOUPDATE = true
+local UPDATE_HOST = "raw.github.com"
+local UPDATE_PATH = "/Galaxix/BoLScripts/master/JustAhri.lua".."?rand="..math.random(1,10000)
+local UPDATE_FILE_PATH = LIB_PATH.."JustNocturne.lua"
+local UPDATE_URL = "https://"..UPDATE_HOST..UPDATE_PATH
+
+function AutoupdaterMsg(msg) print("<font color=\"#6699ff\"><b>Ahri, The Nine-Tailed Fox:</b></font> <font color=\"#FFFFFF\">"..msg..".</font>") end
+if AUTOUPDATE then
+	local ServerData = GetWebResult(UPDATE_HOST, UPDATE_PATH)
+	if ServerData then
+		local ServerVersion = string.match(ServerData, "local version = \"%d+.%d+\"")
+		ServerVersion = string.match(ServerVersion and ServerVersion or "", "%d+.%d+")
+		if ServerVersion then
+			ServerVersion = tonumber(ServerVersion)
+			if tonumber(version) < ServerVersion then
+				AutoupdaterMsg("New Version Available"..ServerVersion)
+				AutoupdaterMsg("Updating, please don't press F9")
+				DelayAction(function() DownloadFile(UPDATE_URL, UPDATE_FILE_PATH, function () AutoupdaterMsg("Successfully updated. ("..version.." => "..ServerVersion.."), press F9 twice to load the updated version.") end) end, 3)
+			else
+				AutoupdaterMsg("You have got the latest version ("..ServerVersion..")")
+			end
+		end
+	else
+		AutoupdaterMsg("Error downloading version info, please manually update it.")
+	end
+end
+
 -- require Prodiction and Collision by Klokje and VPPRED by Honda7 --
 require "Prodiction"
 require "Collision"
@@ -231,7 +260,7 @@ function AhriMenu()
 		AhriMenu.misc:addParam("aHP", "Auto Health Pots", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.misc:addParam("ZWItems", "Auto Zhonyas/Wooglets", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.misc:addParam("ZWHealth", "Min Health % for Zhonyas/Wooglets", SCRIPT_PARAM_SLICE, 15, 0, 100, -1)
-		--AhriMenu.misc:addParam("ColSwap", "Use - Fast Collision (Reload)", SCRIPT_PARAM_ONOFF, true)
+		AhriMenu.misc:addParam("Mana", "Min Mana % for Harras/Jungle", SCRIPT_PARAM_SLICE, 50, 0, 100, -1)
 		AhriMenu.misc:addParam("farmMana", "Min Mana % for Farming/Jungle Clear", SCRIPT_PARAM_SLICE, 50, 0, 100, -1)
 		AhriMenu.misc:addParam("HPHealth", "Min % for Health Pots", SCRIPT_PARAM_SLICE, 50, 0, 100, -1)
 
@@ -242,6 +271,7 @@ end
 
 -- Combo Function --
 function Combo()
+	if not myManaLow2() then
 	if AhriMenu.combo.comboOrbwalk then
 		if Target ~= nil then
 			OrbWalking(Target)
@@ -250,7 +280,6 @@ function Combo()
 		end
 	end
 	if Target ~= nil and not Target.dead and ValidTarget(Target, 1200) then
-	if AhriMenu.combo.mana > (player.mana / player.maxMana) * 100 then return end
 		if AhriMenu.combo.comboE and eReady and GetDistance(Target) <= eRange then CastE(Target) end
 		if charmCheck() then return end
 		if AhriMenu.combo.comboItems then UseItems(Target) end
@@ -260,9 +289,11 @@ function Combo()
 		
 		end
 	    end
+	    end
 
 -- Harass Function --
 function HarassCombo()
+    if not myManaLow2() then
 	if AhriMenu.harass.harassOrbwalk then
 		if Target ~= nil then
 			OrbWalking(Target)
@@ -270,8 +301,7 @@ function HarassCombo()
 			moveToCursor()
 		end
 	end
-	if Target ~= nil and not Target.dead and ValidTarget(Target, 1200) then
-	if AhriMenu.harass.mana > (player.mana / player.maxMana) * 100 then return end
+	    if AhriMenu.harass.mana > (player.mana / player.maxMana) * 100 then return end
 		if AhriMenu.harass.harassE and eReady and GetDistance(Target) <= eRange then CastE(Target) end
 		if charmCheck() then return end
 		if AhriMenu.harass.harassQ and qReady and GetDistance(Target) <= qRange then CastQ(Target) end
@@ -296,6 +326,15 @@ end
 -- Farming Mana Function by Kain--
 function myManaLow()
 	if myHero.mana < (myHero.maxMana * (AhriMenu.misc.farmMana / 100)) then
+		return true
+	else
+		return false
+	end
+end
+
+-- Farming Mana Function by Kain--
+function myManaLow2()
+	if myHero.mana < (myHero.maxMana * (AhriMenu.misc.Mana / 100)) then
 		return true
 	else
 		return false
