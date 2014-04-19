@@ -91,7 +91,7 @@ end
 
 -- Variables Function --
 function Variables()
-	qRange, wRange, eRange, rRange = 880, 800, 975, 450
+	qRange, wRange, eRange, rRange = 880, 750, 975, 450
 	qName, wName, eName, rName = "Orb of Deception", "Fox-Fire", "Charm", "Spirit Rush"
 	qReady, wReady, eReady, rReady = false, false, false, false
 	qSpeed, qDelay, qWidth = 1100, 0.25, 100 
@@ -184,6 +184,7 @@ function AhriMenu()
 		AhriMenu.combo:addParam("comboR", "Use "..rName.." (R) in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("comboOrbwalk", "Orbwalk in Combo", SCRIPT_PARAM_ONOFF, true)
+		AhriMenu.combo:addParam("mana2", "Don't combo if mana < %", SCRIPT_PARAM_SLICE, 0, 0, 100)
 		AhriMenu.combo:addParam("RequireCharm","Require Charm (J)", SCRIPT_PARAM_ONKEYTOGGLE, true, string.byte("J"))
 		AhriMenu.combo:permaShow("RequireCharm")
 		AhriMenu.combo:permaShow("comboKey")
@@ -193,6 +194,7 @@ function AhriMenu()
 		AhriMenu.harass:addParam("harassQ", "Use "..qName.." (Q) in Harass", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.harass:addParam("harassW", "Use "..wName.." (W) in Harass", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.harass:addParam("harassE", "Use "..eName.." (E) in Harass", SCRIPT_PARAM_ONOFF, true)
+		AhriMenu.harass:addParam("mana", "Don't harass if mana < %", SCRIPT_PARAM_SLICE, 0, 0, 100)
 		AhriMenu.harass:addParam("harassOrbwalk", "Orbwalk in Harass", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.harass:permaShow("harassKey")
 
@@ -248,16 +250,16 @@ function Combo()
 		end
 	end
 	if Target ~= nil and not Target.dead and ValidTarget(Target, 1200) then
+	if AhriMenu.combo.mana > (player.mana / player.maxMana) * 100 then return end
 		if AhriMenu.combo.comboE and eReady and GetDistance(Target) <= eRange then CastE(Target) end
 		if charmCheck() then return end
-		--PrintChat("<font color='#FF1493'> >> CharmCheck <<</font>")
 		if AhriMenu.combo.comboItems then UseItems(Target) end
 		if AhriMenu.combo.comboQ and qReady and GetDistance(Target) <= qRange then CastQ(Target) end
 		if AhriMenu.combo.comboW and wReady and GetDistance(Target) <= wRange then CastSpell(_W) end
 		if AhriMenu.combo.comboR and rReady and GetDistance(Target) <= rRange then CastR(Target) end
-		--PrintChat("<font color='#FF1493'> >> Combo <<</font>")
+		
 		end
-	        end
+	    end
 
 -- Harass Function --
 function HarassCombo()
@@ -269,11 +271,11 @@ function HarassCombo()
 		end
 	end
 	if Target ~= nil and not Target.dead and ValidTarget(Target, 1200) then
+	if AhriMenu.harass.mana > (player.mana / player.maxMana) * 100 then return end
 		if AhriMenu.harass.harassE and eReady and GetDistance(Target) <= eRange then CastE(Target) end
 		if charmCheck() then return end
 		if AhriMenu.harass.harassQ and qReady and GetDistance(Target) <= qRange then CastQ(Target) end
 		if AhriMenu.harass.harassW and wReady and GetDistance(Target) <= wRange then CastSpell(_W) end
---PrintChat("<font color='#FF1493'> >> Harras <<</font>")
 		end
 end
 
@@ -756,4 +758,4 @@ function Checks()
 	end
 end	
 
-PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.7 ALPHA Loaded ! <<</font>")
+PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.8 ALPHA Loaded ! <<</font>")
