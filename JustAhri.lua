@@ -301,7 +301,7 @@ function HarassCombo()
 			moveToCursor()
 		end
 	end
-	    if AhriMenu.harass.mana > (player.mana / player.maxMana) * 100 then return end
+	        if Target ~= nil and not Target.dead and ValidTarget(Target, 1200) then
 		if AhriMenu.harass.harassE and eReady and GetDistance(Target) <= eRange then CastE(Target) end
 		if charmCheck() then return end
 		if AhriMenu.harass.harassQ and qReady and GetDistance(Target) <= qRange then CastQ(Target) end
