@@ -66,7 +66,7 @@ if AUTOUPDATE then
 			end
 		end
 	else
-		AutoupdaterMsg("Error downloading version info")
+		AutoupdaterMsg("Error downloading version info, please manually update it.")
 	end
 end
 
@@ -221,7 +221,7 @@ function Menu()
 		Menu.drawing:addParam("LfcDraw", "Use Lagfree Circles (Requires Reload!)", SCRIPT_PARAM_ONOFF, false)
 
 	Menu:addSubMenu("["..myHero.charName.." - Misc Settings]", "misc")
-		Menu:addParam("EvadeW", "Use W With Combo/Harras To SpellShield (Evadeee Only)", SCRIPT_PARAM_ONOFF, true)
+		Menu.misc:addParam("EvadeW", "Use W With Combo/Harras To SpellShield (Evadeee Only)", SCRIPT_PARAM_ONOFF, true)
 
 	TargetSelector = TargetSelector(TARGET_LESS_CAST_PRIORITY, 2000, DAMAGE_PYSHCIAL)
 	TargetSelector.name = "Nocturne"
