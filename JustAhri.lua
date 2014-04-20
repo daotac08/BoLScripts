@@ -55,7 +55,7 @@
 -- Hero Name & VIP Check --
 if myHero.charName ~= "Ahri" or not VIP_USER then return end
 
-local version = "1.000"
+local version = "1.900"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -94,7 +94,7 @@ function OnLoad()
 	Variables()		
 	AhriMenu()
 	VP = VPrediction()
-	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.7 ALPHA Loaded ! <<</font>")
+	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.9 ALPHA Loaded ! <<</font>")
 end
 
 -- OnTick Function --
@@ -255,7 +255,7 @@ function AhriMenu()
 		AhriMenu.drawing:addParam("LfcDraw", "Use Lagfree Circles (Requires Reload!)", SCRIPT_PARAM_ONOFF, true)
 
 	AhriMenu:addSubMenu("["..myHero.charName.." - Misc Settings]", "misc")
-		AhriMenu.misc:addParam("UseProdiction", "Use - Prodiction (Needs Reload)", SCRIPT_PARAM_ONOFF, false)
+		--AhriMenu.misc:addParam("UseProdiction", "Use - Prodiction (Needs Reload)", SCRIPT_PARAM_ONOFF, false)
 		AhriMenu.misc:addParam("aMP", "Auto Mana Pots", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.misc:addParam("aHP", "Auto Health Pots", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.misc:addParam("ZWItems", "Auto Zhonyas/Wooglets", SCRIPT_PARAM_ONOFF, true)
@@ -301,12 +301,13 @@ function HarassCombo()
 			moveToCursor()
 		end
 	end
-	        if Target ~= nil and not Target.dead and ValidTarget(Target, 1200) then
+	    if Target ~= nil and not Target.dead and ValidTarget(Target, 1200) then
 		if AhriMenu.harass.harassE and eReady and GetDistance(Target) <= eRange then CastE(Target) end
 		if charmCheck() then return end
 		if AhriMenu.harass.harassQ and qReady and GetDistance(Target) <= qRange then CastQ(Target) end
 		if AhriMenu.harass.harassW and wReady and GetDistance(Target) <= wRange then CastSpell(_W) end
 		end
+end
 end
 
 -- Farming Function --
@@ -379,21 +380,10 @@ function CastQ(Target)
 	if HitChance >= 2 and GetDistance(CastPosition) <= qRange then
 	CastSpell(_Q, CastPosition.x, CastPosition.z)
 	
-	else
-	
-	if AhriMenu.misc.UseProdiction then
-	if Target and (myHero:CanUseSpell(_Q) == READY) then
-	if GetDistance(pos) - getHitBoxRadius(Target)/2 < qRange then
-	QPos = ProdictQ:GetPrediction(enemy)
-    CastSpell(_Q, QPos.x, QPos.z)
-    end
-	
-			end
-		 end
-	   end
 	end
-  end
- end
+	end
+	end
+	end
 -- Cast E --
 function CastE(Target)
        if (myHero:CanUseSpell(_E) == READY) then
@@ -402,20 +392,11 @@ function CastE(Target)
 			local Mcol = Col:GetMinionCollision(myHero, CastPosition)
 			if not Mcol then
 				CastSpell(_E, CastPosition.x,  CastPosition.z)
-				
-				else
-		
-		if AhriMenu.misc.UseProdiction then
-		if GetDistance(pos) - getHitBoxRadius(Target)/2 < eRange then
-		local willCollide = ProdictECol:GetMinionCollision(pos, myHero)
-        if not willCollide then CastSpell(_E, pos.x, pos.z) end
-			       end
-		        end
-	         end
-	      end
-	    end
-	end
-
+end
+end
+end
+end
+	
 -- Cast R --
 function CastR(Target)
 	if rReady and ValidTarget(Target, rRange) then 
@@ -797,4 +778,4 @@ function Checks()
 	end
 end	
 
-PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.8 ALPHA Loaded ! <<</font>")
+PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.9 ALPHA Loaded ! <<</font>")
