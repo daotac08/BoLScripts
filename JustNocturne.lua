@@ -41,33 +41,39 @@ Features:
 
 if myHero.charName ~= "Nocturne" then return end
 
-local version = "1.000"
+local version = "1.10"
 
-local AUTOUPDATE = true
+--thanks Honda7
+local autoupdateenabled = true
+local UPDATE_SCRIPT_NAME = "JustNocturne"
 local UPDATE_HOST = "raw.github.com"
-local UPDATE_PATH = "/Galaxix/BoLScripts/master/JustNocturne.lua".."?rand="..math.random(1,10000)
-local UPDATE_FILE_PATH = LIB_PATH.."JustNocturne.lua"
+local UPDATE_PATH = "/Galaxix/BoLScripts/master/JustNocturne.lua"
+local UPDATE_FILE_PATH = SCRIPT_PATH..GetCurrentEnv().FILE_NAME
 local UPDATE_URL = "https://"..UPDATE_HOST..UPDATE_PATH
 
-function AutoupdaterMsg(msg) print("<font color=\"#6699ff\"><b>Nocturne, The Eternal Nightmare:</b></font> <font color=\"#FFFFFF\">"..msg..".</font>") end
-if AUTOUPDATE then
-	local ServerData = GetWebResult(UPDATE_HOST, UPDATE_PATH)
-	if ServerData then
-		local ServerVersion = string.match(ServerData, "local version = \"%d+.%d+\"")
-		ServerVersion = string.match(ServerVersion and ServerVersion or "", "%d+.%d+")
-		if ServerVersion then
-			ServerVersion = tonumber(ServerVersion)
-			if tonumber(version) < ServerVersion then
-				AutoupdaterMsg("New Version Available"..ServerVersion)
-				AutoupdaterMsg("Updating, please don't press F9")
-				DelayAction(function() DownloadFile(UPDATE_URL, UPDATE_FILE_PATH, function () AutoupdaterMsg("Successfully updated. ("..version.." => "..ServerVersion.."), press F9 twice to load the updated version.") end) end, 3)
-			else
-				AutoupdaterMsg("You have got the latest version ("..ServerVersion..")")
+local ServerData
+if autoupdateenabled then
+	GetAsyncWebResult(UPDATE_HOST, UPDATE_PATH.."?rand="..math.random(1,1000), function(d) ServerData = d end)
+	function update()
+		if ServerData ~= nil then
+			local ServerVersion
+			local send, tmp, sstart = nil, string.find(ServerData, "local version = \"")
+			if sstart then
+				send, tmp = string.find(ServerData, "\"", sstart+1)
 			end
+			if send then
+				ServerVersion = tonumber(string.sub(ServerData, sstart+1, send-1))
+			end
+
+			if ServerVersion ~= nil and tonumber(ServerVersion) ~= nil and tonumber(ServerVersion) > tonumber(version) then
+				DownloadFile(UPDATE_URL.."?rand="..math.random(1,1000), UPDATE_FILE_PATH, function () print("<font color=\"#FF0000\"><b>"..UPDATE_SCRIPT_NAME..":</b> successfully updated. Reload (double F9) Please. ("..version.." => "..ServerVersion..")</font>") end)     
+			elseif ServerVersion then
+				print("<font color=\"#FF0000\"><b>"..UPDATE_SCRIPT_NAME..":</b> You have got the latest version: <u><b>"..ServerVersion.."</b></u></font>")
+			end		
+			ServerData = nil
 		end
-	else
-		AutoupdaterMsg("Error downloading version info, please manually update it.")
 	end
+	AddTickCallback(update)
 end
 
 require "VPrediction"
@@ -77,7 +83,7 @@ function OnLoad()
 	Variables()		
 	Menu()
 	VP = VPrediction()
-	PrintChat("<font color='#330033'> >> JustNocturne by Galaxix v1.0 Loaded ! <<</font>")
+	PrintChat("<font color='#330033'> >> JustNocturne by Galaxix v1.1 Loaded ! <<</font>")
 end
 
 -- OnTick Function --
@@ -238,7 +244,7 @@ function Combo()
 		end
 	end
 	local RRange = GetRRange()
-	if Target ~= nil then
+	if Target ~= nil and not Target.dead then
 		if Menu.combo.comboItems then UseItems(Target) end
 		if Menu.combo.comboR and rReady and GetDistance(Target) <= RRange then CastSpell(_R, Target) end
 		if Menu.combo.comboE and eReady and GetDistance(Target) <= eRange then CastSpell(_E, Target) end
@@ -256,7 +262,7 @@ function HarassCombo()
 			moveToCursor()
 		end
 	end
-	if Target ~= nil then
+	if Target ~= nil and not Target.dead then
 		if Menu.harass.harassE and eReady and GetDistance(Target) <= eRange then CastSpell(_E, Target) end
 		if Menu.harass.harassW and wReady and GetDistance(Target) then CastW() end
 		if Menu.harass.harassQ and qReady and GetDistance(Target) <= qRange then CastQ(Target) end
@@ -302,8 +308,8 @@ function JungleClear()
 		end
 	end
 	if JungleMob ~= nil then
-		if Menu.jungle.jungleE and GetDistance(JungleMob) <= eRange then CastSpell(_E, JungleMob.x, JungleMob.z) end
-		if Menu.jungle.jungleQ and GetDistance(JungleMob) <= qRange then CastSpell(_Q) end
+		if Menu.jungle.jungleE and GetDistance(JungleMob) <= eRange then CastSpell(_E, JungleMob) end
+		if Menu.jungle.jungleQ and GetDistance(JungleMob) <= qRange then CastSpell(_Q, JungleMobx, JungleMob.z) end
 	end
 end
 
@@ -346,7 +352,7 @@ end
 
 -- Killsteal Function -- 
 function autoKs()
-	if Target ~= nil then
+	if Target ~= nil and not Target.dead then
 		if Menu.ks.killsteal then
 		        if qReady and Target.health <= qDmg and GetDistance(Target) <= qRange then 
                         CastQ(Target)
@@ -355,12 +361,7 @@ function autoKs()
                 elseif qReady and eReady and Target.health <= (qDmg + eDmg) and GetDistance(Target) <= eRange then
                         CastSpell(_E, Target)
                         CastQ(Target)
-                elseif qReady and eReady and wReady and rReady and Target.health <= (qDmg + eDmg + rDmg) and GetDistance(Target) <= rRange then
-                        CastSpell(_R, Target)
-                        CastSpell(_E, Target) 
-                        CastQ(Target)
-                                                                     
-                        
+                           
                 end
         end
     end
@@ -634,4 +635,4 @@ function Checks()
 	end
 end	
 
-PrintChat("<font color='#330033'> >> JustNocturne by Galaxix v1.0 Loaded ! <<</font>")
+PrintChat("<font color='#330033'> >> JustNocturne by Galaxix v1.1 Loaded ! <<</font>")
