@@ -1,5 +1,5 @@
 --[[
-JustNocturne by Galaxix v1.0 - Alpha Version
+JustNocturne by Galaxix v1.2 - Alpha Version
 
 Features:
                         - VPrediction for VIP
@@ -41,49 +41,80 @@ Features:
 
 if myHero.charName ~= "Nocturne" then return end
 
-local version = "1.10"
+local version = "1.200"
 
---thanks Honda7
-local autoupdateenabled = true
-local UPDATE_SCRIPT_NAME = "JustNocturne"
+local REQUIRED_LIBS = {
+		["VPrediction"] = "https://raw.github.com/honda7/BoL/master/Common/VPrediction.lua",
+		["SOW"] = "https://raw.github.com/honda7/BoL/master/Common/SOW.lua",
+		["SourceLib"] = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua",
+
+	}
+
+
+local DOWNLOADING_LIBS, DOWNLOAD_COUNT = false, 0
+local SELF_NAME = GetCurrentEnv() and GetCurrentEnv().FILE_NAME or ""
+
+
+function AfterDownload()
+	DOWNLOAD_COUNT = DOWNLOAD_COUNT - 1
+	if DOWNLOAD_COUNT == 0 then
+		DOWNLOADING_LIBS = false
+		print("<b>[Graves]: Required libraries downloaded successfully, please reload (double F9).</b>")
+	end
+end
+
+for DOWNLOAD_LIB_NAME, DOWNLOAD_LIB_URL in pairs(REQUIRED_LIBS) do
+	if FileExist(LIB_PATH .. DOWNLOAD_LIB_NAME .. ".lua") then
+		require(DOWNLOAD_LIB_NAME)
+	else
+		DOWNLOADING_LIBS = true
+		DOWNLOAD_COUNT = DOWNLOAD_COUNT + 1
+		DownloadFile(DOWNLOAD_LIB_URL, LIB_PATH .. DOWNLOAD_LIB_NAME..".lua", AfterDownload)
+	end
+end
+
+
+if DOWNLOADING_LIBS then return end
+--End auto downloading LIBS
+
+local AUTOUPDATE = false
+local UPDATE_NAME = "JustNocturne"
 local UPDATE_HOST = "raw.github.com"
-local UPDATE_PATH = "/Galaxix/BoLScripts/master/JustNocturne.lua"
+local UPDATE_PATH = "/Galaxix/BoLScripts/master/JustNocturne.lua".."?rand="..math.random(1,10000)
 local UPDATE_FILE_PATH = SCRIPT_PATH..GetCurrentEnv().FILE_NAME
 local UPDATE_URL = "https://"..UPDATE_HOST..UPDATE_PATH
 
-local ServerData
-if autoupdateenabled then
-	GetAsyncWebResult(UPDATE_HOST, UPDATE_PATH.."?rand="..math.random(1,1000), function(d) ServerData = d end)
-	function update()
-		if ServerData ~= nil then
-			local ServerVersion
-			local send, tmp, sstart = nil, string.find(ServerData, "local version = \"")
-			if sstart then
-				send, tmp = string.find(ServerData, "\"", sstart+1)
-			end
-			if send then
-				ServerVersion = tonumber(string.sub(ServerData, sstart+1, send-1))
-			end
-
-			if ServerVersion ~= nil and tonumber(ServerVersion) ~= nil and tonumber(ServerVersion) > tonumber(version) then
-				DownloadFile(UPDATE_URL.."?rand="..math.random(1,1000), UPDATE_FILE_PATH, function () print("<font color=\"#FF0000\"><b>"..UPDATE_SCRIPT_NAME..":</b> successfully updated. Reload (double F9) Please. ("..version.." => "..ServerVersion..")</font>") end)     
-			elseif ServerVersion then
-				print("<font color=\"#FF0000\"><b>"..UPDATE_SCRIPT_NAME..":</b> You have got the latest version: <u><b>"..ServerVersion.."</b></u></font>")
-			end		
-			ServerData = nil
-		end
-	end
-	AddTickCallback(update)
+function AutoupdaterMsg(msg) print("<font color=\"#6699ff\"><b>JustNocturne:</b></font> <font color=\"#FFFFFF\">"..msg..".</font>") end
+if AUTOUPDATE then
+    local ServerData = GetWebResult(UPDATE_HOST, UPDATE_PATH)
+    if ServerData then
+        local ServerVersion = string.match(ServerData, "local version = \"%d+.%d+\"")
+        ServerVersion = string.match(ServerVersion and ServerVersion or "", "%d+.%d+")
+        if ServerVersion then
+            ServerVersion = tonumber(ServerVersion)
+            if tonumber(version) < ServerVersion then
+                AutoupdaterMsg("New version available"..ServerVersion)
+                AutoupdaterMsg("Updating, please don't press F9")
+                DelayAction(function() DownloadFile(UPDATE_URL, UPDATE_FILE_PATH, function () AutoupdaterMsg("Successfully updated. ("..version.." => "..ServerVersion.."), press F9 twice to load the updated version.") end) end, 3)
+            else
+                AutoupdaterMsg("You have got the latest version ("..ServerVersion..")")
+            end
+        end
+    else
+        AutoupdaterMsg("Error downloading version info, please manually update it.")
+    end
 end
+--end Honda7
 
 require "VPrediction"
+require 'SourceLib'
 
 -- OnLoad Function --
 function OnLoad()
 	Variables()		
 	Menu()
 	VP = VPrediction()
-	PrintChat("<font color='#330033'> >> JustNocturne by Galaxix v1.1 Loaded ! <<</font>")
+	PrintChat("<font color='#330033'> >> JustNocturne by Galaxix v1.2 Loaded ! <<</font>")
 end
 
 -- OnTick Function --
@@ -181,7 +212,9 @@ end
 
 -- Menu Function -- 
 function Menu()
-	Menu = scriptConfig("JustNocturne by Galaxix", "Nocturne")
+  Menu = scriptConfig("JustNocturne by Galaxix", "Nocturne")
+	
+	Menu:addParam("Author","Developer: Galaxix",5,"")
 
 	Menu:addSubMenu("["..myHero.charName.." - Combo Settings]", "combo")
 		Menu.combo:addParam("comboKey", "Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
@@ -280,9 +313,9 @@ function GetRRange()
 end
 
 function CastW()
-	if _G.Evadeee_impossibleToEvade then
-		CastSpell(_W)
-	end
+ if _G.Evadeee_impossibleToEvade then
+CastSpell(_W)
+ end
 end
 
 -- Farming Function --
@@ -309,7 +342,7 @@ function JungleClear()
 	end
 	if JungleMob ~= nil then
 		if Menu.jungle.jungleE and GetDistance(JungleMob) <= eRange then CastSpell(_E, JungleMob) end
-		if Menu.jungle.jungleQ and GetDistance(JungleMob) <= qRange then CastSpell(_Q, JungleMobx, JungleMob.z) end
+		if Menu.jungle.jungleQ and GetDistance(JungleMob) <= qRange then CastSpell(_Q, JungleMob.x, JungleMob.z) end
 	end
 end
 
@@ -635,4 +668,4 @@ function Checks()
 	end
 end	
 
-PrintChat("<font color='#330033'> >> JustNocturne by Galaxix v1.1 Loaded ! <<</font>")
+PrintChat("<font color='#330033'> >> JustNocturne by Galaxix v1.2 Loaded ! <<</font>")
