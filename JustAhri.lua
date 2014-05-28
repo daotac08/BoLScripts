@@ -191,7 +191,7 @@ function AhriMenu()
 		AhriMenu.combo:addParam("comboW", "Use "..wName.." (W) in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("comboE", "Use "..eName.." (E) in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("accuracyE", "Accuracy Slider", SCRIPT_PARAM_SLICE, 1, 0, 5, 0)
-		AhriMenu.combo:addParam("comboR", "Use "..rName.." (R) in Combo", SCRIPT_PARAM_LIST, 2, { "To Mouse", "To Enemy"})
+		AhriMenu.combo:addParam("comboR", "Use "..rName.." (R) in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("comboOrbwalk", "Orbwalk in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("RequireCharm","Require Charm (J)", SCRIPT_PARAM_ONKEYTOGGLE, true, string.byte("J"))
@@ -201,10 +201,6 @@ function AhriMenu()
 	AhriMenu:addSubMenu("["..myHero.charName.." - Harass Settings]", "harass")
 		AhriMenu.harass:addParam("harassKey", "Harass Key", SCRIPT_PARAM_ONKEYDOWN, false, 88)
 		AhriMenu.harass:addParam("harassQ", "Use "..qName.." (Q) in Harass", SCRIPT_PARAM_ONOFF, true)
-		AhriMenu.harras:addSubMenu("Q Return Options", "qreturn")
-					AhriMenu.harass.qreturn:addParam("MixedQdoubleProc","Use Q Return Option", SCRIPT_PARAM_ONOFF, false)
-					AhriMenu.harass.qreturn:addParam("bottomQ","[Q] Minimum Range %", SCRIPT_PARAM_SLICE, 75, 65, 85, 0)
-					AhriMenu.harass.qreturn:addParam("topQ","[Q] Maximum Range %", SCRIPT_PARAM_SLICE, 95, 75, 95, 0)	
 		AhriMenu.harass:addParam("harassW", "Use "..wName.." (W) in Harass", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.harass:addParam("harassE", "Use "..eName.." (E) in Harass", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.harass:addParam("harassOrbwalk", "Orbwalk in Harass", SCRIPT_PARAM_ONOFF, true)
@@ -401,10 +397,8 @@ function CastE(Target)
 
 -- Cast R --
 function CastR(Target)
-	if rReady and ValidTarget(Target, rRange) and AhriMenu.combo.useR == 1 then 
+	if rReady and ValidTarget(Target, rRange) then 
 		CastSpell(_R, mousePos.x, mousePos.z)
-	elseif rReady and GetDistance(Target) <= eRange and AhriMenu.combo.useR == 2 then
-		CastSpell(_R, unit.x, unit.z)
 	end
 end
 
