@@ -191,7 +191,7 @@ function AhriMenu()
 		AhriMenu.combo:addParam("comboW", "Use "..wName.." (W) in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("comboE", "Use "..eName.." (E) in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("accuracyE", "Accuracy Slider", SCRIPT_PARAM_SLICE, 1, 0, 5, 0)
-		AhriMenu.combo:addParam("comboR", "Use "..rName.." (R) in Combo", SCRIPT_PARAM_ONOFF, true)
+		AhriMenu.combo:addParam("comboR", "Use "..rName.." (R) in Combo", SCRIPT_PARAM_LIST, 2, { "To Mouse", "To Enemy"})
 		AhriMenu.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("comboOrbwalk", "Orbwalk in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("RequireCharm","Require Charm (J)", SCRIPT_PARAM_ONKEYTOGGLE, true, string.byte("J"))
@@ -401,8 +401,10 @@ function CastE(Target)
 
 -- Cast R --
 function CastR(Target)
-	if rReady and ValidTarget(Target, rRange) then 
+	if rReady and ValidTarget(Target, rRange) and AhriMenu.combo.useR == 1 then 
 		CastSpell(_R, mousePos.x, mousePos.z)
+	elseif rReady and GetDistance(Target) <= eRange and AhriMenu.combo.useR == 2 then
+		CastSpell(_R, unit.x, unit.z)
 	end
 end
 
