@@ -1,4 +1,4 @@
---[[ JustAhri by Galaxix ALPHA Version
+--[[ JustAhri by Galaxix BETA Version
 
 	Features:
 			-Combo Settings:
@@ -49,52 +49,26 @@
 			1.2 Fixed QPos and Added VPrediction to Skills.
 			1.3 Fixed bugs.
 			1.7 Fixed errors.
+			2.0 Reworked somethings.
 
 	]]--
 
 -- Hero Name & VIP Check --
 if myHero.charName ~= "Ahri" or not VIP_USER then return end
 
-local version = "1.900"
-
-local AUTOUPDATE = true
-local UPDATE_HOST = "raw.github.com"
-local UPDATE_PATH = "/Galaxix/BoLScripts/master/JustAhri.lua".."?rand="..math.random(1,10000)
-local UPDATE_FILE_PATH = LIB_PATH.."JustNocturne.lua"
-local UPDATE_URL = "https://"..UPDATE_HOST..UPDATE_PATH
-
-function AutoupdaterMsg(msg) print("<font color=\"#6699ff\"><b>Ahri, The Nine-Tailed Fox:</b></font> <font color=\"#FFFFFF\">"..msg..".</font>") end
-if AUTOUPDATE then
-	local ServerData = GetWebResult(UPDATE_HOST, UPDATE_PATH)
-	if ServerData then
-		local ServerVersion = string.match(ServerData, "local version = \"%d+.%d+\"")
-		ServerVersion = string.match(ServerVersion and ServerVersion or "", "%d+.%d+")
-		if ServerVersion then
-			ServerVersion = tonumber(ServerVersion)
-			if tonumber(version) < ServerVersion then
-				AutoupdaterMsg("New Version Available"..ServerVersion)
-				AutoupdaterMsg("Updating, please don't press F9")
-				DelayAction(function() DownloadFile(UPDATE_URL, UPDATE_FILE_PATH, function () AutoupdaterMsg("Successfully updated. ("..version.." => "..ServerVersion.."), press F9 twice to load the updated version.") end) end, 3)
-			else
-				AutoupdaterMsg("You have got the latest version ("..ServerVersion..")")
-			end
-		end
-	else
-		AutoupdaterMsg("Error downloading version info, please manually update it.")
-	end
-end
-
 -- require Prodiction and Collision by Klokje and VPPRED by Honda7 --
 require "Prodiction"
 require "Collision"
 require "VPrediction"
+
 
 -- OnLoad Function --
 function OnLoad()
 	Variables()		
 	AhriMenu()
 	VP = VPrediction()
-	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.9 ALPHA Loaded ! <<</font>")
+
+	PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v2.0 BETA Loaded ! <<</font>")
 end
 
 -- OnTick Function --
@@ -116,14 +90,21 @@ function OnTick()
 	if AhriMenu.ks.AutoIgnite then AutoIgnite() end
 	if FarmingKey and not (ComboKey) then FarmMinions() end
 	if AhriMenu.misc.ZWItems and MyHealthLow() and Target and (ZNAREADY or WGTREADY) then CastSpell((wgtSlot or znaSlot)) end
-end
-
+	if AhriMenu.misc.autoE then
+    for i, enemy in pairs(GetEnemyHeroes()) do
+			if GetDistance(enemy) < eRange and myHero:CanUseSpell(_E) == READY and not enemy.canMove then
+				CastE(enemy.x, enemy.z)
+			end
+		end
+	end
+end	
+	
 -- Variables Function --
 function Variables()
-	qRange, wRange, eRange, rRange = 880, 750, 975, 450
+	qRange, wRange, eRange, rRange = 880, 800, 975, 450
 	qName, wName, eName, rName = "Orb of Deception", "Fox-Fire", "Charm", "Spirit Rush"
 	qReady, wReady, eReady, rReady = false, false, false, false
-	qSpeed, qDelay, qWidth = 1100, 0.25, 100 
+	qSpeed, qDelay, qWidth = 1100, 0.25, 80 
 	eSpeed, eDelay, eWidth = 1200, 0.25, 60
 	Prodict = ProdictManager.GetInstance()
 	ProdictQ = Prodict:AddProdictionObject(_Q, qRange, qSpeed, qDelay, qWidth, myHero)
@@ -213,7 +194,6 @@ function AhriMenu()
 		AhriMenu.combo:addParam("comboR", "Use "..rName.." (R) in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("comboItems", "Use Items in Combo", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.combo:addParam("comboOrbwalk", "Orbwalk in Combo", SCRIPT_PARAM_ONOFF, true)
-		AhriMenu.combo:addParam("mana2", "Don't combo if mana < %", SCRIPT_PARAM_SLICE, 0, 0, 100)
 		AhriMenu.combo:addParam("RequireCharm","Require Charm (J)", SCRIPT_PARAM_ONKEYTOGGLE, true, string.byte("J"))
 		AhriMenu.combo:permaShow("RequireCharm")
 		AhriMenu.combo:permaShow("comboKey")
@@ -221,10 +201,14 @@ function AhriMenu()
 	AhriMenu:addSubMenu("["..myHero.charName.." - Harass Settings]", "harass")
 		AhriMenu.harass:addParam("harassKey", "Harass Key", SCRIPT_PARAM_ONKEYDOWN, false, 88)
 		AhriMenu.harass:addParam("harassQ", "Use "..qName.." (Q) in Harass", SCRIPT_PARAM_ONOFF, true)
+		AhriMenu.harras:addSubMenu("Q Return Options", "qreturn")
+					AhriMenu.harass.qreturn:addParam("MixedQdoubleProc","Use Q Return Option", SCRIPT_PARAM_ONOFF, false)
+					AhriMenu.harass.qreturn:addParam("bottomQ","[Q] Minimum Range %", SCRIPT_PARAM_SLICE, 75, 65, 85, 0)
+					AhriMenu.harass.qreturn:addParam("topQ","[Q] Maximum Range %", SCRIPT_PARAM_SLICE, 95, 75, 95, 0)	
 		AhriMenu.harass:addParam("harassW", "Use "..wName.." (W) in Harass", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.harass:addParam("harassE", "Use "..eName.." (E) in Harass", SCRIPT_PARAM_ONOFF, true)
-		AhriMenu.harass:addParam("mana", "Don't harass if mana < %", SCRIPT_PARAM_SLICE, 0, 0, 100)
 		AhriMenu.harass:addParam("harassOrbwalk", "Orbwalk in Harass", SCRIPT_PARAM_ONOFF, true)
+		AhriMenu.harass:addParam("hmana", "Don't harass if mana < %", SCRIPT_PARAM_SLICE, 0, 0, 100)
 		AhriMenu.harass:permaShow("harassKey")
 
 	AhriMenu:addSubMenu("["..myHero.charName.." - Farming Settings]", "farming")
@@ -255,23 +239,21 @@ function AhriMenu()
 		AhriMenu.drawing:addParam("LfcDraw", "Use Lagfree Circles (Requires Reload!)", SCRIPT_PARAM_ONOFF, true)
 
 	AhriMenu:addSubMenu("["..myHero.charName.." - Misc Settings]", "misc")
-		--AhriMenu.misc:addParam("UseProdiction", "Use - Prodiction (Needs Reload)", SCRIPT_PARAM_ONOFF, false)
 		AhriMenu.misc:addParam("aMP", "Auto Mana Pots", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.misc:addParam("aHP", "Auto Health Pots", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.misc:addParam("ZWItems", "Auto Zhonyas/Wooglets", SCRIPT_PARAM_ONOFF, true)
 		AhriMenu.misc:addParam("ZWHealth", "Min Health % for Zhonyas/Wooglets", SCRIPT_PARAM_SLICE, 15, 0, 100, -1)
-		AhriMenu.misc:addParam("Mana", "Min Mana % for Harras/Jungle", SCRIPT_PARAM_SLICE, 50, 0, 100, -1)
+		AhriMenu.misc:addParam("autoE", "Automatically Cast E if Target is Immobile", SCRIPT_PARAM_ONOFF, false)
 		AhriMenu.misc:addParam("farmMana", "Min Mana % for Farming/Jungle Clear", SCRIPT_PARAM_SLICE, 50, 0, 100, -1)
 		AhriMenu.misc:addParam("HPHealth", "Min % for Health Pots", SCRIPT_PARAM_SLICE, 50, 0, 100, -1)
-
-	TargetSelector = TargetSelector(TARGET_LESS_CAST_PRIORITY, 1000, DAMAGE_MAGIC)
+		
+		TargetSelector = TargetSelector(TARGET_LESS_CAST_PRIORITY, 975, DAMAGE_MAGIC)
 	TargetSelector.name = "Ahri"
 	AhriMenu:addTS(TargetSelector)
 end
 
 -- Combo Function --
 function Combo()
-	if not myManaLow2() then
 	if AhriMenu.combo.comboOrbwalk then
 		if Target ~= nil then
 			OrbWalking(Target)
@@ -280,16 +262,16 @@ function Combo()
 		end
 	end
 	if Target ~= nil and not Target.dead and ValidTarget(Target, 1200) then
+	
+		
 		if AhriMenu.combo.comboE and eReady and GetDistance(Target) <= eRange then CastE(Target) end
 		if charmCheck() then return end
 		if AhriMenu.combo.comboItems then UseItems(Target) end
 		if AhriMenu.combo.comboQ and qReady and GetDistance(Target) <= qRange then CastQ(Target) end
 		if AhriMenu.combo.comboW and wReady and GetDistance(Target) <= wRange then CastSpell(_W) end
 		if AhriMenu.combo.comboR and rReady and GetDistance(Target) <= rRange then CastR(Target) end
-		
 		end
-	    end
-	    end
+	        end
 
 -- Harass Function --
 function HarassCombo()
@@ -301,13 +283,19 @@ function HarassCombo()
 			moveToCursor()
 		end
 	end
-	    if Target ~= nil and not Target.dead and ValidTarget(Target, 1200) then
-		if AhriMenu.harass.harassE and eReady and GetDistance(Target) <= eRange then CastE(Target) end
-		if charmCheck() then return end
-		if AhriMenu.harass.harassQ and qReady and GetDistance(Target) <= qRange then CastQ(Target) end
-		if AhriMenu.harass.harassW and wReady and GetDistance(Target) <= wRange then CastSpell(_W) end
+	if Target ~= nil and not Target.dead and ValidTarget(Target, 975) then
+	if AhriMenu.harass.harassE and eReady and GetDistance(Target) <= eRange then CastE(Target) end
+	if charmCheck() then return end
+	if AhriMenu.harass.MixedQdoubleProc and qReady and GetDistance(Target) <= qRange then
+			if HarassQ() then 
+				CastQ()
+			end
+		else
+			CastQ()
 		end
-end
+	if AhriMenu.harass.harassW and wReady and GetDistance(Target) <= wRange then CastSpell(_W) end
+	 end
+  end
 end
 
 -- Farming Function --
@@ -335,7 +323,16 @@ end
 
 -- Farming Mana Function by Kain--
 function myManaLow2()
-	if myHero.mana < (myHero.maxMana * (AhriMenu.misc.Mana / 100)) then
+	if myHero.mana < (myHero.maxMana * (AhriMenu.harass.hmana / 100)) then
+		return true
+	else
+		return false
+	end
+end
+
+--Harras Q Function by chancey
+function HarassQ()
+	if GetDistance(Target) >= (qRange * AhriMenu.harass.qreturn.bottomQ/100) and GetDistance(Target) <= (qRange * AhriMenu.harass.qreturn.topQ/100) then
 		return true
 	else
 		return false
@@ -353,6 +350,7 @@ function JungleClear()
 		end
 	end
 	if JungleMob ~= nil and not myManaLow() then
+	
 		if AhriMenu.jungle.jungleQ and GetDistance(JungleMob) <= qRange then CastSpell(_Q, JungleMob.x, JungleMob.z) end
 		if AhriMenu.jungle.jungleW and GetDistance(JungleMob) <= wRange then CastSpell(_W) end
 	end
@@ -380,10 +378,10 @@ function CastQ(Target)
 	if HitChance >= 2 and GetDistance(CastPosition) <= qRange then
 	CastSpell(_Q, CastPosition.x, CastPosition.z)
 	
+	  end
 	end
-	end
-	end
-	end
+  end
+ end
 -- Cast E --
 function CastE(Target)
        if (myHero:CanUseSpell(_E) == READY) then
@@ -392,11 +390,15 @@ function CastE(Target)
 			local Mcol = Col:GetMinionCollision(myHero, CastPosition)
 			if not Mcol then
 				CastSpell(_E, CastPosition.x,  CastPosition.z)
-end
-end
-end
-end
+				
+				else
+		
+		    end
+	    end
+	end
 	
+	end
+
 -- Cast R --
 function CastR(Target)
 	if rReady and ValidTarget(Target, rRange) then 
@@ -778,4 +780,4 @@ function Checks()
 	end
 end	
 
-PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v1.9 ALPHA Loaded ! <<</font>")
+PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v2.0 BETA Loaded ! <<</font>")
