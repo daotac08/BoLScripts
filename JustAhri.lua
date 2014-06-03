@@ -1,5 +1,5 @@
 -- // Auto Update // --
-local version = "2.10"
+local version = "2.20"
 
 if myHero.charName ~= "Ahri" or not VIP_USER then return end
 
@@ -7,8 +7,9 @@ _G.UseUpdater = true
 
 local REQUIRED_LIBS = {
 	["SOW"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/SOW.lua",
-	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua"
-}
+	["VPrediction"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/VPrediction.lua",
+	["Collision"] = "https://bitbucket.org/Klokje/public-klokjes-bol-scripts/raw/b891699e739f77f77fd428e74dec00b2a692fdef/Common/Collision.lua"
+    }
 
 local DOWNLOADING_LIBS, DOWNLOAD_COUNT = false, 0
 
