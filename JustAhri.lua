@@ -1,5 +1,5 @@
 -- // Auto Update // --
-local version = "2.31"
+local version = "2.32"
 
 if myHero.charName ~= "Ahri" or not VIP_USER then return end
 
@@ -69,7 +69,7 @@ function Data()
 	Spell = {
 		Q = {range = 880, delay = 0.25, speed = 1600, width = 90},
 		W = {range = 800, delay = nil, speed = math.huge, width = nil},
-		E = {range = 975, delay = 0.25, speed = 1500,  width = 50},
+		E = {range = 975, delay = 0.25, speed = 1500,  width = 60},
 		R = {range = 550, delay = nil, speed = math.huge, width = 190}
 	}
 	IgniteSlot = ((myHero:GetSpellData(SUMMONER_1).name:find("SummonerDot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("SummonerDot") and SUMMONER_2) or nil)
@@ -77,7 +77,7 @@ end
 
 function OnLoad()
 	
-	print("<font color='#FF1493'> >> JustAhri by Galaxix v2.3 BETA Loaded ! <<</font>")
+	print("<font color='#FF1493'> >> JustAhri by Galaxix{Justy} v2.3 BETA Loaded ! <<</font>")
 	--{ Variables
 	Data()
 	myHero = GetMyHero()
@@ -99,9 +99,9 @@ function OnLoad()
 	Menu = scriptConfig("JustAhri","JustAhri")
 		--{ Script Information
 		Menu:addSubMenu("[ JustAhri : Script Information]","Script")
-		Menu.Script:addParam("Author","         Author: Galaxix",SCRIPT_PARAM_INFO,"")
+		Menu.Script:addParam("Author","         Author: Galaxix {Justy}",SCRIPT_PARAM_INFO,"")
 		Menu.Script:addParam("Credits","        Credits: Lazer, Honda, AWA[ BEST ]",SCRIPT_PARAM_INFO,"")
-		Menu.Script:addParam("Version","         Version: 2.31 ",SCRIPT_PARAM_INFO,"")
+		Menu.Script:addParam("Version","         Version: 2.32 ",SCRIPT_PARAM_INFO,"")
 		--}
 		
 		--{ General/Key Bindings
