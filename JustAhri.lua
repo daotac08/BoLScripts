@@ -1,5 +1,5 @@
 -- // Auto Update // --
-local version = "2.20"
+local version = "2.30"
 
 if myHero.charName ~= "Ahri" or not VIP_USER then return end
 
@@ -76,6 +76,8 @@ function Data()
 end
 
 function OnLoad()
+	
+	print("<font color='#FF1493'> >> JustAhri by Galaxix v2.1 BETA Loaded ! <<</font>")
 	--{ Variables
 	Data()
 	myHero = GetMyHero()
@@ -99,7 +101,7 @@ function OnLoad()
 		Menu:addSubMenu("[ JustAhri : Script Information]","Script")
 		Menu.Script:addParam("Author","         Author: Galaxix",SCRIPT_PARAM_INFO,"")
 		Menu.Script:addParam("Credits","        Credits: Lazer, Honda, AWA[ BEST ]",SCRIPT_PARAM_INFO,"")
-		Menu.Script:addParam("Version","         Version: 2.10 ",SCRIPT_PARAM_INFO,"")
+		Menu.Script:addParam("Version","         Version: 2.30 ",SCRIPT_PARAM_INFO,"")
 		--}
 		
 		--{ General/Key Bindings
@@ -164,7 +166,7 @@ function OnLoad()
 		--{ Prediction Mode
 		Menu:addSubMenu("[ JustAhri : Prediction Setting ]","Predict")
 			Menu.Predict:addParam("G","[General Prediction Settings]",SCRIPT_PARAM_INFO,"")
-			Menu.Predict:addParam("Mode","Prediction Mode",SCRIPT_PARAM_LIST,1,{"VPrediction","Prodiction"})
+			Menu.Predict:addParam("Mode","Prediction Mode",SCRIPT_PARAM_LIST,1,{"VPrediction"})
 			Menu.Predict:addParam("D","[Detail Prediction Settings]",SCRIPT_PARAM_INFO,"")
 			Menu.Predict:addParam("VPHitChance","VPrediction HitChance",SCRIPT_PARAM_LIST,3,{"[0]Target Position","[1]Low Hitchance","[2]High Hitchance","[3]Target slowed/close","[4]Target immobile","[5]Target Dashing"})
 		--}
@@ -179,14 +181,8 @@ function OnLoad()
 		Menu.Predict:permaShow("Mode")
 		--}
 	
-	    Prodiction = ProdictManager.GetInstance()
-		ProdictQ = Prodiction:AddProdictionObject(_Q,Spell.Q.range,Spell.Q.speed,Spell.Q.delay,Spell.Q.width)
-		ProdictW = Prodiction:AddProdictionObject(_W,Spell.W.range,Spell.W.speed,Spell.W.delay,Spell.W.width)
-		ProdictE = Prodiction:AddProdictionObject(_E,Spell.E.range,Spell.E.speed,Spell.E.delay,Spell.E.width)
-		ProdictR = Prodiction:AddProdictionObject(_R,Spell.R.range,Spell.R.speed,Spell.R.delay,Spell.R.width)
-		
-		--{ Print
-		PrintChat("<font color='#FF1493'> >> JustAhri by Galaxix v2.1 BETA Loaded ! <<</font>")
+	   	--{ Print
+		print("<font color='#FF1493'> >> JustAhri by Galaxix v2.1 BETA Loaded ! <<</font>")
 		loaded = true 
 		--}
 		end 
@@ -350,14 +346,8 @@ function CastQ(unit)
 				if CastPosition ~= nil and HitChance >= (Menu.Predict.VPHitChance - 1) then
 				SpellCast(_Q,CastPosition)
 				end
-			-- Prodiction
-			elseif Menu.Predict.Mode == 2 then
-				local CastPosition = ProdictQ:GetPrediction(unit)
-				if CastPosition ~= nil then
-					SpellCast(_Q,CastPosition)
-				end
-           end
-     end
+	end
+end
 end
 
 function CastE(unit)
@@ -368,16 +358,7 @@ function CastE(unit)
 				if CastPosition ~= nil and HitChance >= (Menu.Predict.VPHitChance -1) then
 					SpellCast(_E,CastPosition)
 				end
-			-- Prodiction
-			elseif Menu.Predict.Mode == 2 then
-			local isCol,ColTable = Col:GetCollision(myHero,unit)
-		    if #ColTable <= 1 then	
-			local CastPosition = ProdictE:GetPrediction(unit)
-				if CastPosition ~= nil then
-					SpellCast(_E,CastPosition)
-				end
-            end
-         end
+		 end
      end
 end
 
