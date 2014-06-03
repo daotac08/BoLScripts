@@ -67,9 +67,9 @@ local Menu = nil
 function Data()
 	Recalling = false
 	Spell = {
-		Q = {range = 880, delay = 0.25, speed = 1100, width = 80},
+		Q = {range = 880, delay = 0.25, speed = 1600, width = 90},
 		W = {range = 800, delay = nil, speed = math.huge, width = nil},
-		E = {range = 975, delay = 0.25, speed = 1200,  width = 100},
+		E = {range = 975, delay = 0.25, speed = 1500,  width = 100},
 		R = {range = 550, delay = nil, speed = math.huge, width = 190}
 	}
 	IgniteSlot = ((myHero:GetSpellData(SUMMONER_1).name:find("SummonerDot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("SummonerDot") and SUMMONER_2) or nil)
