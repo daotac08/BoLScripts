@@ -77,7 +77,7 @@ end
 
 function OnLoad()
 	
-	print("<font color='#FF1493'> >> JustAhri by Galaxix v2.1 BETA Loaded ! <<</font>")
+	print("<font color='#FF1493'> >> JustAhri by Galaxix v2.3 BETA Loaded ! <<</font>")
 	--{ Variables
 	Data()
 	myHero = GetMyHero()
@@ -182,7 +182,7 @@ function OnLoad()
 		--}
 	
 	   	--{ Print
-		print("<font color='#FF1493'> >> JustAhri by Galaxix v2.1 BETA Loaded ! <<</font>")
+		print("<font color='#FF1493'> >> JustAhri by Galaxix v2.3 BETA Loaded ! <<</font>")
 		loaded = true 
 		--}
 		end 
