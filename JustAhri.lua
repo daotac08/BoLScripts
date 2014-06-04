@@ -1,5 +1,5 @@
 -- // Auto Update // --
-local version = "2.32"
+local version = "2.33"
 
 if myHero.charName ~= "Ahri" or not VIP_USER then return end
 
@@ -101,7 +101,7 @@ function OnLoad()
 		Menu:addSubMenu("[ JustAhri : Script Information]","Script")
 		Menu.Script:addParam("Author","         Author: Galaxix {Justy}",SCRIPT_PARAM_INFO,"")
 		Menu.Script:addParam("Credits","        Credits: Lazer, Honda, AWA[ BEST ]",SCRIPT_PARAM_INFO,"")
-		Menu.Script:addParam("Version","         Version: 2.32 ",SCRIPT_PARAM_INFO,"")
+		Menu.Script:addParam("Version","         Version: 2.33 ",SCRIPT_PARAM_INFO,"")
 		--}
 		
 		--{ General/Key Bindings
@@ -159,7 +159,7 @@ function OnLoad()
 		Menu:addSubMenu("[ JustAhri : Extra Settings ]","Extra")
 		Menu.Extra:addParam("AutoI","Auto Ignite on killable enemy",SCRIPT_PARAM_ONOFF,true)
 		Menu.Extra:addParam("AutoE","Auto E GapClosers",SCRIPT_PARAM_ONOFF,false)
-		Menu.Extra:addParam("Packet","Use Packets",SCRIPT_PARAM_ONOFF,false)
+		Menu.Extra:addParam("Packet","Use Packets",SCRIPT_PARAM_ONOFF,true)
 		
 		--}
 		
