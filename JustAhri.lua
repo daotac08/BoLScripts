@@ -1,5 +1,5 @@
 -- // Auto Update // --
-local version = "2.33"
+local version = "2.35"
 
 if myHero.charName ~= "Ahri" or not VIP_USER then return end
 
@@ -72,6 +72,7 @@ function Data()
 		E = {range = 975, delay = 0.25, speed = 1500,  width = 60},
 		R = {range = 550, delay = nil, speed = math.huge, width = 190}
 	}
+	MaxQW = {1,3,2,1,1,4,1,2,1,2,4,2,2,3,3,4,3,3}
 	IgniteSlot = ((myHero:GetSpellData(SUMMONER_1).name:find("SummonerDot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("SummonerDot") and SUMMONER_2) or nil)
 end
 
@@ -101,7 +102,7 @@ function OnLoad()
 		Menu:addSubMenu("[ JustAhri : Script Information]","Script")
 		Menu.Script:addParam("Author","         Author: Galaxix {Justy}",SCRIPT_PARAM_INFO,"")
 		Menu.Script:addParam("Credits","        Credits: Lazer, Honda, AWA[ BEST ]",SCRIPT_PARAM_INFO,"")
-		Menu.Script:addParam("Version","         Version: 2.33 ",SCRIPT_PARAM_INFO,"")
+		Menu.Script:addParam("Version","         Version: 2.35 ",SCRIPT_PARAM_INFO,"")
 		--}
 		
 		--{ General/Key Bindings
@@ -140,6 +141,14 @@ function OnLoad()
 		Menu.Harass:addParam("HMana","Don't harass if mana < %",SCRIPT_PARAM_SLICE,20,0,100)
 		--}
 		
+		--{ Farm Settings
+		Menu:addSubMenu("[ JustAhri : Farming ]", "farming")
+		Menu.farming:addParam("farmKey", "Farming ON/OFF", SCRIPT_PARAM_ONKEYTOGGLE, false, 90)
+		Menu.farming:addParam("farmQ", "Farm with Q", SCRIPT_PARAM_ONOFF, false)
+		Menu.farming:addParam("FMana","Don't farm if mana < %",SCRIPT_PARAM_SLICE,20,0,100)
+		Menu.farming:permaShow("farmKey")
+		--}
+		
 		--{ Draw Settings
 		Menu:addSubMenu("[ JustAhri : Draw ]","Draw")
 		Menu.Draw:addSubMenu("Skill Info","Skill")
@@ -159,7 +168,7 @@ function OnLoad()
 		Menu:addSubMenu("[ JustAhri : Extra Settings ]","Extra")
 		Menu.Extra:addParam("AutoI","Auto Ignite on killable enemy",SCRIPT_PARAM_ONOFF,true)
 		Menu.Extra:addParam("AutoE","Auto E GapClosers",SCRIPT_PARAM_ONOFF,false)
-		Menu.Extra:addParam("Packet","Use Packets",SCRIPT_PARAM_ONOFF,true)
+		Menu.Extra:addParam("AutoLevel","Auto Level Sequence",SCRIPT_PARAM_LIST,1,{"None","Max QW"})
 		
 		--}
 		
@@ -202,6 +211,11 @@ function OnLoad()
 	DfgSlot  = GetInventorySlotItem(3128)
 	BftSlot  = GetInventorySlotItem(3188)
 	
+	--{ Auto level sequence
+	if Menu.Extra.AutoLevel == 2 then
+		autoLevelSetSequence(MaxQW)
+	end
+		
 	DFGREADY = (DfgSlot ~= nil and myHero:CanUseSpell(DfgSlot) == READY)
 	BFTREADY = (BftSlot ~= nil and myHero:CanUseSpell(BftSlot) == READY)
 	IGNITEREADY = (IgniteSlot ~= nil and myHero:CanUseSpell(IgniteSlot) == READY)
@@ -274,10 +288,8 @@ end
 
 --{ Prediction Cast
 function SpellCast(spellSlot,castPosition)
-	if Menu.Extra.Packet then
-		Packet("S_CAST", {spellId = spellSlot, fromX = castPosition.x, fromY = castPosition.z, toX = castPosition.x, toY = castPosition.z}):send()
+	Packet("S_CAST", {spellId = spellSlot, fromX = castPosition.x, fromY = castPosition.z, toX = castPosition.x, toY = castPosition.z}):send()
 	end
-end
 --}
 
 --{ Enemy in range of myHero
@@ -325,6 +337,29 @@ function IsMyManaLow()
 	end
 end
 
+-- Farm Mana Function by Kain--
+function IsMyManaLow2()
+	if myHero.mana < (myHero.maxMana * (Menu.farming.FMana / 100)) then
+		return true
+	else
+		return false
+	end
+end
+
+-- Farming Function --
+function FarmMinions()
+	if not IsMyManaLow2() then 
+		for _, minion in pairs(enemyMinions.objects) do
+			local qMinionDmg = getDmg("Q", minion, myHero)
+			if ValidTarget(minion) then
+				if Menu.farming.farmQ and QREADY and GetDistance(minion) <= Spell.Q.range and minion.health <= qMinionDmg then
+					CastSpell(_Q, minion.x, minion.z)
+				end
+			end
+		end
+	end
+end
+
 -- Use Items
 function UseItems(unit)
 if Menu.Combo.I and GetDistanceSqr(myHero,Target) <= 750 * 750 then
@@ -364,8 +399,8 @@ end
 
 function CastW(unit)
         if unit ~= nil and myHero:CanUseSpell(_W) == READY and GetDistance(unit) <= Spell.W.range then
-                Packet("S_CAST", {spellId = _W}):send()
-      end
+        Packet("S_CAST", {spellId = _W}):send()
+        end
 end
 
 function CastR(unit)
