@@ -1,5 +1,5 @@
 -- // Auto Update // --
-local version = "2.36"
+local version = "2.37"
  
 if myHero.charName ~= "Ahri" or not VIP_USER then return end
  
@@ -67,10 +67,10 @@ local Menu = nil
 function Data()
         Recalling = false
         Spell = {
-                Q = {range = 880, delay = 0.25, speed = 1600, width = 90},
+                Q = {range = 950, delay = 0.25, speed = 1600, width = 90},
                 W = {range = 800, delay = nil, speed = math.huge, width = nil},
-                E = {range = 975, delay = 0.25, speed = 1500,  width = 60},
-                R = {range = 550, delay = nil, speed = math.huge, width = 190}
+                E = {range = 1050, delay = 0.25, speed = 1500,  width = 60},
+                R = {range = 450, delay = nil, speed = math.huge, width = 190}
         }
         MaxQW = {1,3,2,1,1,4,1,2,1,2,4,2,2,3,3,4,3,3}
         IgniteSlot = ((myHero:GetSpellData(SUMMONER_1).name:find("SummonerDot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("SummonerDot") and SUMMONER_2) or nil)
@@ -102,7 +102,7 @@ function OnLoad()
                 Menu:addSubMenu("[ JustAhri : Script Information]","Script")
                 Menu.Script:addParam("Author","         Author: Galaxix {Justy}",SCRIPT_PARAM_INFO,"")
                 Menu.Script:addParam("Credits","        Credits: Lazer, Honda, AWA[ BEST ]",SCRIPT_PARAM_INFO,"")
-                Menu.Script:addParam("Version","         Version: 2.36 ",SCRIPT_PARAM_INFO,"")
+                Menu.Script:addParam("Version","         Version: 2.37 ",SCRIPT_PARAM_INFO,"")
                 --}
                
                 --{ General/Key Bindings
@@ -149,18 +149,59 @@ function OnLoad()
                 --}
                
                 --{ Draw Settings
-                Menu:addSubMenu("[ JustAhri : Draw ]","Draw")
-                Menu.Draw:addSubMenu("Skill Info","Skill")
-               
-                Menu.Draw.Skill:addParam("QRange","Draw Q Range",SCRIPT_PARAM_ONOFF,true)
-                Menu.Draw.Skill:addParam("QColor","Set Q Color",SCRIPT_PARAM_COLOR,{255,255,0,0})
-                Menu.Draw.Skill:addParam("WRange","Draw W Range",SCRIPT_PARAM_ONOFF,true)
-                Menu.Draw.Skill:addParam("WColor","Set W Color",SCRIPT_PARAM_COLOR,{255,255,255,0})
-                Menu.Draw.Skill:addParam("ERange","Draw E Range",SCRIPT_PARAM_ONOFF,true)
-                Menu.Draw.Skill:addParam("EColor","Set E Color",SCRIPT_PARAM_COLOR,{255,0,255,0})
-                Menu.Draw.Skill:addParam("RRange","Draw R Range",SCRIPT_PARAM_ONOFF,true)
-                Menu.Draw.Skill:addParam("RColor","Set R Color",SCRIPT_PARAM_COLOR,{255,0,255,255})
-                Menu.Draw:addParam("LFC","Use Lag free circle",SCRIPT_PARAM_ONOFF,true)
+                Menu:addSubMenu("[ JustAhri : Draw ]","Draw")               
+
+               Menu.Draw:addSubMenu("AA Range", "AA")
+					Menu.Draw.AA:addParam("draw", "Draw Circle", SCRIPT_PARAM_ONOFF, true)
+					Menu.Draw.AA:addParam("color", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
+					Menu.Draw.AA:addParam("line", "", SCRIPT_PARAM_INFO, "")
+					Menu.Draw.AA:addParam("lfc", "Use Low FPS Circle", SCRIPT_PARAM_ONOFF, true)
+					Menu.Draw.AA:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
+					Menu.Draw.AA:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 135, 0, 360)
+
+				Menu.Draw:addSubMenu("Q Range", "Q")
+					Menu.Draw.Q:addParam("draw", "Draw Circle", SCRIPT_PARAM_ONOFF, true)
+					Menu.Draw.Q:addParam("color", "Circle Color", SCRIPT_PARAM_COLOR, {255, 100, 0, 180})
+					Menu.Draw.Q:addParam("line", "", SCRIPT_PARAM_INFO, "")
+					Menu.Draw.Q:addParam("ac", "Use After Combo Circle", SCRIPT_PARAM_ONOFF, true)
+					Menu.Draw.Q:addParam("colorac", "Circle Color After Combo", SCRIPT_PARAM_COLOR, {120, 139, 91, 182})
+					Menu.Draw.Q:addParam("line", "", SCRIPT_PARAM_INFO, "")
+					Menu.Draw.Q:addParam("lfc", "Use Low FPS Circle", SCRIPT_PARAM_ONOFF, false)
+					Menu.Draw.Q:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 3, 1, 5)
+					Menu.Draw.Q:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 135, 0, 360)
+
+				Menu.Draw:addSubMenu("W Range", "W")
+					Menu.Draw.W:addParam("draw", "Draw Circle", SCRIPT_PARAM_ONOFF, false)
+					Menu.Draw.W:addParam("color", "Circle Color", SCRIPT_PARAM_COLOR, {255, 100, 0, 180})
+					Menu.Draw.W:addParam("line", "", SCRIPT_PARAM_INFO, "")
+					Menu.Draw.W:addParam("ac", "Use After Combo Circle", SCRIPT_PARAM_ONOFF, true)
+					Menu.Draw.W:addParam("colorac", "Circle Color After Combo", SCRIPT_PARAM_COLOR, {120, 139, 91, 182})
+					Menu.Draw.W:addParam("line", "", SCRIPT_PARAM_INFO, "")
+					Menu.Draw.W:addParam("lfc", "Use Low FPS Circle", SCRIPT_PARAM_ONOFF, false)
+					Menu.Draw.W:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
+					Menu.Draw.W:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 135, 0, 360)
+
+				Menu.Draw:addSubMenu("E Range", "E")
+					Menu.Draw.E:addParam("draw", "Draw Circle", SCRIPT_PARAM_ONOFF, false)
+					Menu.Draw.E:addParam("color", "Circle Color", SCRIPT_PARAM_COLOR, {255, 100, 0, 180})
+					Menu.Draw.E:addParam("line", "", SCRIPT_PARAM_INFO, "")
+					Menu.Draw.E:addParam("ac", "Use After Combo Circle", SCRIPT_PARAM_ONOFF, true)
+					Menu.Draw.E:addParam("colorac", "Circle Color After Combo", SCRIPT_PARAM_COLOR, {120, 139, 91, 182})
+					Menu.Draw.E:addParam("line", "", SCRIPT_PARAM_INFO, "")
+					Menu.Draw.E:addParam("lfc", "Use Low FPS Circle", SCRIPT_PARAM_ONOFF, false)
+					Menu.Draw.E:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
+					Menu.Draw.E:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 135, 0, 360)
+
+				Menu.Draw:addSubMenu("R Range", "R")
+					Menu.Draw.R:addParam("draw", "Draw Circle", SCRIPT_PARAM_ONOFF, false)
+					Menu.Draw.R:addParam("color", "Circle Color", SCRIPT_PARAM_COLOR, {255, 100, 0, 180})
+					Menu.Draw.R:addParam("line", "", SCRIPT_PARAM_INFO, "")
+					Menu.Draw.R:addParam("ac", "Use After Combo Circle", SCRIPT_PARAM_ONOFF, true)
+					Menu.Draw.R:addParam("colorac", "Circle Color After Combo", SCRIPT_PARAM_COLOR, {120, 139, 91, 182})
+					Menu.Draw.R:addParam("line", "", SCRIPT_PARAM_INFO, "")
+					Menu.Draw.R:addParam("lfc", "Use Low FPS Circle", SCRIPT_PARAM_ONOFF, false)
+					Menu.Draw.R:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
+					Menu.Draw.R:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 135, 0, 360)
                 --}
                
                 --{ Extra Settings
@@ -260,21 +301,84 @@ function OnLoad()
        
 -- OnDraw --
 function OnDraw()
-  if loaded then
-        if QREADY and Menu.Draw.Skill.QRange then
-                DrawCircle2(myHero.x,myHero.y,myHero.z,Spell.Q.range,ARGB(Menu.Draw.Skill.QColor[1],Menu.Draw.Skill.QColor[2],Menu.Draw.Skill.QColor[3],Menu.Draw.Skill.QColor[4]))
-        end
-        if WREADY and Menu.Draw.Skill.WRange then
-                DrawCircle2(myHero.x,myHero.y,myHero.z,Spell.W.range,ARGB(Menu.Draw.Skill.WColor[1],Menu.Draw.Skill.WColor[2],Menu.Draw.Skill.WColor[3],Menu.Draw.Skill.WColor[4]))
-        end
-        if EREADY and Menu.Draw.Skill.ERange then
-                DrawCircle2(myHero.x,myHero.y,myHero.z,Spell.E.range,ARGB(Menu.Draw.Skill.EColor[1],Menu.Draw.Skill.EColor[2],Menu.Draw.Skill.EColor[3],Menu.Draw.Skill.EColor[4]))
-        end
-        if RREADY and Menu.Draw.Skill.RRange then
-                DrawCircle2(myHero.x,myHero.y,myHero.z,Spell.R.range,ARGB(Menu.Draw.Skill.RColor[1],Menu.Draw.Skill.RColor[2],Menu.Draw.Skill.RColor[3],Menu.Draw.Skill.RColor[4]))
-        end
-            end
-                        end
+	local AArange = myHero.range + 50 + GetDistance(myHero.minBBox)
+
+	if Menu.Draw.AA.draw then --[[AA Draw]]--
+		if Menu.Draw.AA.lfc then
+			DrawCircleAA(myHero.x, myHero.y, myHero.z, AArange, ARGB(Menu.Draw.AA.color[1],Menu.Draw.AA.color[2],Menu.Draw.AA.color[3],Menu.Draw.AA.color[4]))
+		else
+			DrawCircle(myHero.x, myHero.y, myHero.z, AArange, ARGB(Menu.Draw.AA.color[1],Menu.Draw.AA.color[2],Menu.Draw.AA.color[3],Menu.Draw.AA.color[4]))
+		end
+	end
+	if Menu.Draw.Q.draw then --[[Q Draw]]--
+		if Menu.Draw.Q.lfc then
+			if QREADY then
+				DrawCircleQ(myHero.x, myHero.y, myHero.z, Spell.Q.range, ARGB(Menu.Draw.Q.color[1],Menu.Draw.Q.color[2],Menu.Draw.Q.color[3],Menu.Draw.Q.color[4]))
+			end
+			if not QREADY and Menu.Draw.Q.ac then
+				DrawCircleQ(myHero.x, myHero.y, myHero.z, Spell.Q.range, ARGB(Menu.Draw.Q.colorac[1],Menu.Draw.Q.colorac[2],Menu.Draw.Q.colorac[3],Menu.Draw.Q.colorac[4]))
+			end
+		else
+			if QREADY then
+				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.Q.range, ARGB(Menu.Draw.Q.color[1],Menu.Draw.Q.color[2],Menu.Draw.Q.color[3],Menu.Draw.Q.color[4]))
+			end
+			if not QREADY and Menu.Draw.Q.ac then
+				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.Q.range, ARGB(Menu.Draw.Q.colorac[1],Menu.Draw.Q.colorac[2],Menu.Draw.Q.colorac[3],Menu.Draw.Q.colorac[4]))
+			end
+		end
+	end
+	if Menu.Draw.W.draw then --[[W Draw]]--
+		if Menu.Draw.W.lfc then
+			if WREADY then
+				DrawCircleW(myHero.x, myHero.y, myHero.z, Spell.W.range, ARGB(Menu.Draw.W.color[1],Menu.Draw.W.color[2],Menu.Draw.W.color[3],Menu.Draw.W.color[4]))
+			end
+			if not WREADY and Menu.Draw.W.ac then
+				DrawCircleW(myHero.x, myHero.y, myHero.z, Spell.W.range, ARGB(Menu.Draw.W.colorac[1],Menu.Draw.W.colorac[2],Menu.Draw.W.colorac[3],Menu.Draw.W.colorac[4]))
+			end
+		else
+			if WREADY then
+				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.W.range, ARGB(Menu.Draw.W.color[1],Menu.Draw.W.color[2],Menu.Draw.W.color[3],Menu.Draw.W.color[4]))
+			end
+			if not WREADY and Menu.Draw.W.ac then
+				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.W.range, ARGB(Menu.Draw.W.colorac[1],Menu.Draw.W.colorac[2],Menu.Draw.W.colorac[3],Menu.Draw.W.colorac[4]))
+			end
+		end
+	end
+	if Menu.Draw.E.draw then
+		if Menu.Draw.E.lfc then
+			if EREADY then
+				DrawCircleE(myHero.x, myHero.y, myHero.z, Spell.E.range, ARGB(Menu.Draw.E.color[1],Menu.Draw.E.color[2],Menu.Draw.E.color[3],Menu.Draw.E.color[4]))
+			end
+			if not EREADY and Menu.Draw.E.ac then
+				DrawCircleE(myHero.x, myHero.y, myHero.z, Spell.E.range, ARGB(Menu.Draw.E.colorac[1],Menu.Draw.E.colorac[2],Menu.Draw.E.colorac[3],Menu.Draw.E.colorac[4]))
+			end
+		else
+			if EREADY then
+				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.E.range, ARGB(Menu.Draw.E.color[1],Menu.Draw.E.color[2],Menu.Draw.E.color[3],Menu.Draw.E.color[4]))
+			end
+			if not EREADY and Menu.Draw.E.ac then
+				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.E.range, ARGB(Menu.Draw.E.colorac[1],Menu.Draw.E.colorac[2],Menu.Draw.E.colorac[3],Menu.Draw.E.colorac[4]))
+			end
+		end
+	end
+	if Menu.Draw.R.draw then
+		if Menu.Draw.R.lfc then
+			if RREADY then
+				DrawCircleR(myHero.x, myHero.y, myHero.z, Spell.R.range, ARGB(Menu.Draw.R.color[1],Menu.Draw.R.color[2],Menu.Draw.R.color[3],Menu.Draw.R.color[4]))
+			end
+			if not RREADY and Menu.Draw.R.ac then
+				DrawCircleR(myHero.x, myHero.y, myHero.z, Spell.R.range, ARGB(Menu.Draw.R.colorac[1],Menu.Draw.R.colorac[2],Menu.Draw.R.colorac[3],Menu.Draw.R.colorac[4]))
+			end
+		else
+			if RREADY then
+				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.R.range, ARGB(Menu.Draw.R.color[1],Menu.Draw.R.color[2],Menu.Draw.R.color[3],Menu.Draw.R.color[4]))
+			end
+			if not RREADY and Menu.Draw.R.ac then
+				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.R.range, ARGB(Menu.Draw.R.colorac[1],Menu.Draw.R.colorac[2],Menu.Draw.R.colorac[3],Menu.Draw.R.colorac[4]))
+			end
+		end
+	end
+end
        
 --{ Target Selector
 function GrabTarget()
@@ -407,34 +511,6 @@ function CastR(unit)
        end
 end
  
---{ Lag Free circle credits: vadash,ViceVersa,barasia283
-function DrawCircleNextLvl(x, y, z, radius, width, color, chordlength)
-        radius = radius or 300
-        quality = math.max(8,math.floor(180/math.deg((math.asin((chordlength/(2*radius)))))))
-        quality = 2 * math.pi / quality
-        radius = radius*.92
-        local points = {}
-        for theta = 0, 2 * math.pi + quality, quality do
-                local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
-                points[#points + 1] = D3DXVECTOR2(c.x, c.y)
-        end
-        DrawLines2(points, width or 1, color or 4294967295)
-end
- 
- 
-function DrawCircle2(x, y, z, radius, color)
-        local vPos1 = Vector(x, y, z)
-        local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
-        local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
-        local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
-        if Menu.Draw.LFC and OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
-                DrawCircleNextLvl(x, y, z, radius, 1, color, 75)
-        else
-                DrawCircle(x,y,z,radius,color)
-        end
-end
---}
- 
 --KillSteal
 function KillSteal()
         for _, enemy in ipairs(GetEnemyHeroes()) do
@@ -510,5 +586,123 @@ function MaxRange()
         else
                 return myHero.range + 50
         end
+end
+--}
+
+--{ Lag Free circle credits: vadash,ViceVersa,barasia283
+--AA Range Circle Quality
+function DrawCircleNextLvlAA(x, y, z, radius, width, color, chordlength)
+	radius = radius or 300
+	quality = math.max(8,math.floor(Menu.Draw.AA.quality/math.deg((math.asin((chordlength/(2*radius)))))))
+	quality = 2 * math.pi / quality
+	radius = radius*.92
+	local points = {}
+	for theta = 0, 2 * math.pi + quality, quality do
+		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
+		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
+	end
+	DrawLines2(points, width or 1, color or 4294967295)
+end
+--AA Range Circle Width
+function DrawCircleAA(x, y, z, radius, color)
+	local vPos1 = Vector(x, y, z)
+	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
+	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
+	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
+	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
+		DrawCircleNextLvlAA(x, y, z, radius, Menu.Draw.AA.width, color, 75)	
+	end
+end
+--Q Range Circle Quality
+function DrawCircleNextLvlQ(x, y, z, radius, width, color, chordlength)
+	radius = radius or 300
+	quality = math.max(8,math.floor(Menu.Draw.Q.quality/math.deg((math.asin((chordlength/(2*radius)))))))
+	quality = 2 * math.pi / quality
+	radius = radius*.92
+	local points = {}
+	for theta = 0, 2 * math.pi + quality, quality do
+		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
+		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
+	end
+	DrawLines2(points, width or 1, color or 4294967295)
+end
+--Q Range Circle Width
+function DrawCircleQ(x, y, z, radius, color)
+	local vPos1 = Vector(x, y, z)
+	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
+	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
+	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
+	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
+		DrawCircleNextLvlQ(x, y, z, radius, Menu.Draw.Q.width, color, 75)	
+	end
+end
+--W Range Circle Quality
+function DrawCircleNextLvlW(x, y, z, radius, width, color, chordlength)
+	radius = radius or 300
+	quality = math.max(8,math.floor(Menu.Draw.W.quality/math.deg((math.asin((chordlength/(2*radius)))))))
+	quality = 2 * math.pi / quality
+	radius = radius*.92
+	local points = {}
+	for theta = 0, 2 * math.pi + quality, quality do
+		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
+		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
+	end
+	DrawLines2(points, width or 1, color or 4294967295)
+end
+--W Range Circle Width
+function DrawCircleW(x, y, z, radius, color)
+	local vPos1 = Vector(x, y, z)
+	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
+	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
+	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
+	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
+		DrawCircleNextLvlW(x, y, z, radius, Menu.Draw.W.width, color, 75)	
+	end
+end
+--E Range Circle Quality
+function DrawCircleNextLvlE(x, y, z, radius, width, color, chordlength)
+	radius = radius or 300
+	quality = math.max(8,math.floor(Menu.Draw.E.quality/math.deg((math.asin((chordlength/(2*radius)))))))
+	quality = 2 * math.pi / quality
+	radius = radius*.92
+	local points = {}
+	for theta = 0, 2 * math.pi + quality, quality do
+		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
+		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
+	end
+	DrawLines2(points, width or 1, color or 4294967295)
+end
+--E Range Circle Width
+function DrawCircleE(x, y, z, radius, color)
+	local vPos1 = Vector(x, y, z)
+	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
+	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
+	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
+	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
+		DrawCircleNextLvlE(x, y, z, radius, Menu.Draw.E.width, color, 75)	
+	end
+end
+--R Range Circle Quality
+function DrawCircleNextLvlR(x, y, z, radius, width, color, chordlength)
+	radius = radius or 300
+	quality = math.max(8,math.floor(Menu.Draw.R.quality/math.deg((math.asin((chordlength/(2*radius)))))))
+	quality = 2 * math.pi / quality
+	radius = radius*.92
+	local points = {}
+	for theta = 0, 2 * math.pi + quality, quality do
+		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
+		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
+	end
+	DrawLines2(points, width or 1, color or 4294967295)
+end
+--R Range Circle Width
+function DrawCircleR(x, y, z, radius, color)
+	local vPos1 = Vector(x, y, z)
+	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
+	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
+	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
+	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
+		DrawCircleNextLvlR(x, y, z, radius, Menu.Draw.R.width, color, 75)	
+	end
 end
 --}
