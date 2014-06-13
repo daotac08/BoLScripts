@@ -67,9 +67,9 @@ local Menu = nil
 function Data()
         Recalling = false
         Spell = {
-                Q = {range = 950, delay = 0.25, speed = 1600, width = 90},
+                Q = {range = 950, delay = 0.25, speed = 1600, width = 100},
                 W = {range = 800, delay = nil, speed = math.huge, width = nil},
-                E = {range = 1050, delay = 0.25, speed = 1500,  width = 60},
+                E = {range = 975, delay = 0.25, speed = 1500,  width = 60},
                 R = {range = 450, delay = nil, speed = math.huge, width = 190}
         }
         MaxQW = {1,3,2,1,1,4,1,2,1,2,4,2,2,3,3,4,3,3}
