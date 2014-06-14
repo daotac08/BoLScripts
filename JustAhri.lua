@@ -571,7 +571,7 @@ function OnLoseBuff(unit, buff)
 end
  
 function charmCheck()
-        Menu.Combo.RequireCharm and myHero:GetSpellData(_E).level > 0 and not EREADY then
+        if Menu.Combo.RequireCharm and myHero:GetSpellData(_E).level > 0 and not EREADY then
                 return true
         else
                 return false
