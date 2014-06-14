@@ -1,5 +1,5 @@
 -- // Auto Update // --
-local version = "2.38"
+local version = "2.39"
  
 if myHero.charName ~= "Ahri" or not VIP_USER then return end
  
@@ -102,7 +102,7 @@ function OnLoad()
                 Menu:addSubMenu("[ JustAhri : Script Information]","Script")
                 Menu.Script:addParam("Author","         Author: Galaxix {Justy}",SCRIPT_PARAM_INFO,"")
                 Menu.Script:addParam("Credits","        Credits: Lazer, Honda, AWA[ BEST ]",SCRIPT_PARAM_INFO,"")
-                Menu.Script:addParam("Version","         Version: 2.38 ",SCRIPT_PARAM_INFO,"")
+                Menu.Script:addParam("Version","         Version: 2.39 ",SCRIPT_PARAM_INFO,"")
                 --}
                
                 --{ General/Key Bindings
