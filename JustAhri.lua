@@ -1,9 +1,11 @@
 -- // Auto Update // --
-local version = "2.41"
+local version = "2.45"
  
 if myHero.charName ~= "Ahri" or not VIP_USER then return end
  
 _G.Ahri_Autoupdate = true
+
+require "SxOrbWalk"
  
 local REQUIRED_LIBS = {
         ["SOW"] = "https://raw.githubusercontent.com/Hellsing/BoL/master/common/SOW.lua",
@@ -66,37 +68,37 @@ local Menu = nil
 
 local ToInterrupt = {}
 local InterruptSpells = {
-
-	{ charName = "FiddleSticks", 	spellName = "Crowstorm"},
-    { charName = "MissFortune", 	spellName = "MissFortuneBulletTime"},
-    { charName = "Nunu", 			spellName = "AbsoluteZero"},
-	{ charName = "Caitlyn", 		spellName = "CaitlynAceintheHole"},
-	{ charName = "Katarina", 		spellName = "KatarinaR"},
-	{ charName = "Karthus", 		spellName = "FallenOne"},
-	{ charName = "Malzahar",        spellName = "AlZaharNetherGrasp"},
-	{ charName = "Galio",           spellName = "GalioIdolOfDurand"},
-	{ charName = "Darius",          spellName = "DariusExecute"},
-	{ charName = "MonkeyKing",      spellName = "MonkeyKingSpinToWin"},
-	{ charName = "Vi",    			spellName = "ViR"},
-	{ charName = "Shen",			spellName = "ShenStandUnited"},
-	{ charName = "Urgot",			spellName = "UrgotSwap2"},
-	{ charName = "Pantheon",		spellName = "Pantheon_GrandSkyfall_Jump"},
-	{ charName = "Lucian",			spellName = "LucianR"},
-	{ charName = "Warwick",			spellName = "InfiniteDuress"},
-	{ charName = "Urgot",			spellName = "UrgotSwap2"},
-	{ charName = "Xerath",			spellName = "XerathLocusOfPower2"},
-	{ charName = "Velkoz",			spellName = "VelkozR"},
-	{ charName = "Skarner",			spellName = "SkarnerImpale"},
-						 }
+ 
+    { charName = "FiddleSticks",     spellName = "Crowstorm"},
+    { charName = "MissFortune",     spellName = "MissFortuneBulletTime"},
+    { charName = "Nunu",             spellName = "AbsoluteZero"},
+    { charName = "Caitlyn",         spellName = "CaitlynAceintheHole"},
+    { charName = "Katarina",         spellName = "KatarinaR"},
+    { charName = "Karthus",         spellName = "FallenOne"},
+    { charName = "Malzahar",        spellName = "AlZaharNetherGrasp"},
+    { charName = "Galio",           spellName = "GalioIdolOfDurand"},
+    { charName = "Darius",          spellName = "DariusExecute"},
+    { charName = "MonkeyKing",      spellName = "MonkeyKingSpinToWin"},
+    { charName = "Vi",                spellName = "ViR"},
+    { charName = "Shen",            spellName = "ShenStandUnited"},
+    { charName = "Urgot",            spellName = "UrgotSwap2"},
+    { charName = "Pantheon",        spellName = "Pantheon_GrandSkyfall_Jump"},
+    { charName = "Lucian",            spellName = "LucianR"},
+    { charName = "Warwick",            spellName = "InfiniteDuress"},
+    { charName = "Urgot",            spellName = "UrgotSwap2"},
+    { charName = "Xerath",            spellName = "XerathLocusOfPower2"},
+    { charName = "Velkoz",            spellName = "VelkozR"},
+    { charName = "Skarner",            spellName = "SkarnerImpale"},
+                         }
 
  
 function Data()
         Recalling = false
         Spell = {
-                Q = {range = 950, delay = 0.25, speed = 1600, width = 100},
-                W = {range = 800, delay = nil, speed = math.huge, width = nil},
-                E = {range = 975, delay = 0.25, speed = 1500,  width = 60},
-                R = {range = 450, delay = nil, speed = math.huge, width = 190}
+                Q = {range = 880, delay = 0.25, speed = 1100, width = 100},
+                W = {range = 800},
+                E = {range = 975, delay = 0.25, speed = 1200,  width = 60},
+                R = {range = 450}
         }
         MaxQW = {1,3,2,1,1,4,1,2,1,2,4,2,2,3,3,4,3,3}
         IgniteSlot = ((myHero:GetSpellData(SUMMONER_1).name:find("SummonerDot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("SummonerDot") and SUMMONER_2) or nil)
@@ -107,6 +109,7 @@ function OnLoad()
         --{ Variables
         Data()
         myHero = GetMyHero()
+        lastSkin = 0
        
         -- Orbwalk & VPrediction
         VP = VPrediction()
@@ -127,7 +130,7 @@ function OnLoad()
                 Menu:addSubMenu("[ JustAhri : Script Information]","Script")
                 Menu.Script:addParam("Author","         Author: Galaxix",SCRIPT_PARAM_INFO,"")
                 Menu.Script:addParam("Credits","        Credits: Lazer, Honda, AWA&QQQ[ BEST ]",SCRIPT_PARAM_INFO,"")
-                Menu.Script:addParam("Version","         Version: 2.41 ",SCRIPT_PARAM_INFO,"")
+                Menu.Script:addParam("Version","         Version: 2.45 ",SCRIPT_PARAM_INFO,"")
                 --}
                
                 --{ General/Key Bindings
@@ -135,7 +138,7 @@ function OnLoad()
                 Menu.General:addParam("Combo","Combo",SCRIPT_PARAM_ONKEYDOWN,false,32)
                 Menu.General:addParam("KillSteal","Smart KillSteal",SCRIPT_PARAM_ONOFF,true)
                 Menu.General:addParam("Harass","Harass",SCRIPT_PARAM_ONKEYDOWN,false,string.byte("G"))
-                Menu.General:addParam("Farm","Farm",SCRIPT_PARAM_ONKEYDOWN,false,string.byte("V"))
+               -- Menu.General:addParam("Farm","Farm",SCRIPT_PARAM_ONKEYDOWN,false,string.byte("V"))
                 --}
                
                 --{ Target Selector
@@ -146,7 +149,7 @@ function OnLoad()
                
                 --{ Orbwalking
                 Menu:addSubMenu("[ JustAhri : Orbwalking ]","Orbwalking")
-                OW:LoadToMenu(Menu.Orbwalking)
+                SxOrb:LoadToMenu(Menu.Orbwalking)
                 --}
                
                 --{ Combo Settings
@@ -186,73 +189,31 @@ function OnLoad()
 			      Menu.inter:addParam("inter3", "No supported skills to interupt.", SCRIPT_PARAM_INFO, "")
 		          end
                
-                --{ Farm Settings
-                Menu:addSubMenu("[ JustAhri : Farming ]", "Farm")
-                Menu.Farm:addParam("Q", "Farm with Q", SCRIPT_PARAM_ONOFF, false)
-                Menu.Farm:addParam("Mana","Don't farm if mana < %",SCRIPT_PARAM_SLICE,20,0,100)
-                --}
-               
+                           
                 --{ Draw Settings
-                Menu:addSubMenu("[ JustAhri : Draw ]","Draw")               
+                Menu:addSubMenu("[ JustAhri : Draw ]","draw")               
 
-               Menu.Draw:addSubMenu("AA Range", "AA")
-					Menu.Draw.AA:addParam("draw", "Draw Circle", SCRIPT_PARAM_ONOFF, true)
-					Menu.Draw.AA:addParam("color", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
-					Menu.Draw.AA:addParam("line", "", SCRIPT_PARAM_INFO, "")
-					Menu.Draw.AA:addParam("lfc", "Use Low FPS Circle", SCRIPT_PARAM_ONOFF, true)
-					Menu.Draw.AA:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-					Menu.Draw.AA:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 135, 0, 360)
-
-				Menu.Draw:addSubMenu("Q Range", "Q")
-					Menu.Draw.Q:addParam("draw", "Draw Circle", SCRIPT_PARAM_ONOFF, true)
-					Menu.Draw.Q:addParam("color", "Circle Color", SCRIPT_PARAM_COLOR, {255, 100, 0, 180})
-					Menu.Draw.Q:addParam("line", "", SCRIPT_PARAM_INFO, "")
-					Menu.Draw.Q:addParam("ac", "Use After Combo Circle", SCRIPT_PARAM_ONOFF, true)
-					Menu.Draw.Q:addParam("colorac", "Circle Color After Combo", SCRIPT_PARAM_COLOR, {120, 139, 91, 182})
-					Menu.Draw.Q:addParam("line", "", SCRIPT_PARAM_INFO, "")
-					Menu.Draw.Q:addParam("lfc", "Use Low FPS Circle", SCRIPT_PARAM_ONOFF, false)
-					Menu.Draw.Q:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 3, 1, 5)
-					Menu.Draw.Q:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 135, 0, 360)
-
-				Menu.Draw:addSubMenu("W Range", "W")
-					Menu.Draw.W:addParam("draw", "Draw Circle", SCRIPT_PARAM_ONOFF, false)
-					Menu.Draw.W:addParam("color", "Circle Color", SCRIPT_PARAM_COLOR, {255, 100, 0, 180})
-					Menu.Draw.W:addParam("line", "", SCRIPT_PARAM_INFO, "")
-					Menu.Draw.W:addParam("ac", "Use After Combo Circle", SCRIPT_PARAM_ONOFF, true)
-					Menu.Draw.W:addParam("colorac", "Circle Color After Combo", SCRIPT_PARAM_COLOR, {120, 139, 91, 182})
-					Menu.Draw.W:addParam("line", "", SCRIPT_PARAM_INFO, "")
-					Menu.Draw.W:addParam("lfc", "Use Low FPS Circle", SCRIPT_PARAM_ONOFF, false)
-					Menu.Draw.W:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-					Menu.Draw.W:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 135, 0, 360)
-
-				Menu.Draw:addSubMenu("E Range", "E")
-					Menu.Draw.E:addParam("draw", "Draw Circle", SCRIPT_PARAM_ONOFF, false)
-					Menu.Draw.E:addParam("color", "Circle Color", SCRIPT_PARAM_COLOR, {255, 100, 0, 180})
-					Menu.Draw.E:addParam("line", "", SCRIPT_PARAM_INFO, "")
-					Menu.Draw.E:addParam("ac", "Use After Combo Circle", SCRIPT_PARAM_ONOFF, true)
-					Menu.Draw.E:addParam("colorac", "Circle Color After Combo", SCRIPT_PARAM_COLOR, {120, 139, 91, 182})
-					Menu.Draw.E:addParam("line", "", SCRIPT_PARAM_INFO, "")
-					Menu.Draw.E:addParam("lfc", "Use Low FPS Circle", SCRIPT_PARAM_ONOFF, false)
-					Menu.Draw.E:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-					Menu.Draw.E:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 135, 0, 360)
-
-				Menu.Draw:addSubMenu("R Range", "R")
-					Menu.Draw.R:addParam("draw", "Draw Circle", SCRIPT_PARAM_ONOFF, false)
-					Menu.Draw.R:addParam("color", "Circle Color", SCRIPT_PARAM_COLOR, {255, 100, 0, 180})
-					Menu.Draw.R:addParam("line", "", SCRIPT_PARAM_INFO, "")
-					Menu.Draw.R:addParam("ac", "Use After Combo Circle", SCRIPT_PARAM_ONOFF, true)
-					Menu.Draw.R:addParam("colorac", "Circle Color After Combo", SCRIPT_PARAM_COLOR, {120, 139, 91, 182})
-					Menu.Draw.R:addParam("line", "", SCRIPT_PARAM_INFO, "")
-					Menu.Draw.R:addParam("lfc", "Use Low FPS Circle", SCRIPT_PARAM_ONOFF, false)
-					Menu.Draw.R:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-					Menu.Draw.R:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 135, 0, 360)
-                --}
+               	Menu.draw:addParam("enabled", "Activate Lag Free Circles", 1, false)
+				Menu.draw:addParam("qual", "Line Quality", 4, 10, 10, 100, 10)
+				Menu.draw:addParam("CLinfo", "The lower your quality the less the lag", 5, "")
+				Menu.draw:addParam("width", "Line Width", 4, 4, 4, 10, 0)
+				Menu.draw:addParam("spe", "", 5, "")
+				Menu.draw:addParam("drawQ", "Draw Q Range", SCRIPT_PARAM_ONOFF, true)
+				Menu.draw:addParam("qColor", "Q Colour", SCRIPT_PARAM_COLOR, {255,124,252,0})
+				Menu.draw:addParam("drawW", "Draw W Range", SCRIPT_PARAM_ONOFF, true)
+				Menu.draw:addParam("wColor", "W Colour", SCRIPT_PARAM_COLOR, {255,124,252,0})
+				Menu.draw:addParam("drawE", "Draw E Range", SCRIPT_PARAM_ONOFF, true)				
+				Menu.draw:addParam("eColor", "E Colour", SCRIPT_PARAM_COLOR, {255,124,252,0})
+				Menu.draw:addParam("drawR", "Draw R Range", SCRIPT_PARAM_ONOFF, true)
+				Menu.draw:addParam("rColor", "R Colour", SCRIPT_PARAM_COLOR, {255,124,252,0})
+				--}
                
                 --{ Extra Settings
                 Menu:addSubMenu("[ JustAhri : Extra Settings ]","Extra")
                 Menu.Extra:addParam("AutoI","Auto Ignite on killable enemy",SCRIPT_PARAM_ONOFF,true)
                 Menu.Extra:addParam("AutoE","Auto E GapClosers",SCRIPT_PARAM_ONOFF,false)
                 Menu.Extra:addParam("AutoLevel","Auto Level Sequence",SCRIPT_PARAM_LIST,1,{"None","Max QW"})
+                Menu.Extra:addParam("skin", "Skin", SCRIPT_PARAM_LIST, 3, { "Dynastie", "Midnight", "Foxfire", "Popstar","Classic" })
                
                 --}
                
@@ -267,15 +228,11 @@ function OnLoad()
                 --{ Perma Show
                 Menu.Script:permaShow("Author")
                 Menu.Script:permaShow("Version")
-                Menu.General:permaShow("Combo")
-                Menu.Combo:permaShow("R")
-                Menu.Combo:permaShow("RequireCharm")
-                Menu.General:permaShow("Harass")
                 Menu.Predict:permaShow("Mode")
                 --}
        
                 --{ Print
-                print("<font color='#FF1493'> >> JustAhri by Galaxix v2.4 Loaded ! <<</font>")
+                print("<font color='#FF1493'> >> JustAhri by Galaxix v2.45 Loaded ! <<</font>")
                 loaded = true
                 --}
                 end
@@ -284,6 +241,7 @@ function OnLoad()
 -- OnTick Function --
    function OnTick()
          if loaded then
+         SkinHack()
    --{ Variables
         QREADY = myHero:CanUseSpell(_Q) == READY
         WREADY = myHero:CanUseSpell(_W) == READY
@@ -345,82 +303,17 @@ function OnLoad()
        
 -- OnDraw --
 function OnDraw()
-	local AArange = myHero.range + 50 + GetDistance(myHero.minBBox)
-
-	if Menu.Draw.AA.draw then --[[AA Draw]]--
-		if Menu.Draw.AA.lfc then
-			DrawCircleAA(myHero.x, myHero.y, myHero.z, AArange, ARGB(Menu.Draw.AA.color[1],Menu.Draw.AA.color[2],Menu.Draw.AA.color[3],Menu.Draw.AA.color[4]))
-		else
-			DrawCircle(myHero.x, myHero.y, myHero.z, AArange, ARGB(Menu.Draw.AA.color[1],Menu.Draw.AA.color[2],Menu.Draw.AA.color[3],Menu.Draw.AA.color[4]))
-		end
+	if QREADY and Menu.draw.drawQ then
+		DrawCircleN(myHero.x, myHero.y, myHero.z, Spell.Q.range, ARGB(Menu.draw.qColor[1], Menu.draw.qColor[2], Menu.draw.qColor[3], Menu.draw.qColor[4]))
 	end
-	if Menu.Draw.Q.draw then --[[Q Draw]]--
-		if Menu.Draw.Q.lfc then
-			if QREADY then
-				DrawCircleQ(myHero.x, myHero.y, myHero.z, Spell.Q.range, ARGB(Menu.Draw.Q.color[1],Menu.Draw.Q.color[2],Menu.Draw.Q.color[3],Menu.Draw.Q.color[4]))
-			end
-			if not QREADY and Menu.Draw.Q.ac then
-				DrawCircleQ(myHero.x, myHero.y, myHero.z, Spell.Q.range, ARGB(Menu.Draw.Q.colorac[1],Menu.Draw.Q.colorac[2],Menu.Draw.Q.colorac[3],Menu.Draw.Q.colorac[4]))
-			end
-		else
-			if QREADY then
-				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.Q.range, ARGB(Menu.Draw.Q.color[1],Menu.Draw.Q.color[2],Menu.Draw.Q.color[3],Menu.Draw.Q.color[4]))
-			end
-			if not QREADY and Menu.Draw.Q.ac then
-				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.Q.range, ARGB(Menu.Draw.Q.colorac[1],Menu.Draw.Q.colorac[2],Menu.Draw.Q.colorac[3],Menu.Draw.Q.colorac[4]))
-			end
-		end
+	if WREADY and Menu.draw.drawW then
+		DrawCircleN(myHero.x, myHero.y, myHero.z, Spell.W.range, ARGB(Menu.draw.wColor[1], Menu.draw.wColor[2], Menu.draw.wColor[3], Menu.draw.wColor[4]))
 	end
-	if Menu.Draw.W.draw then --[[W Draw]]--
-		if Menu.Draw.W.lfc then
-			if WREADY then
-				DrawCircleW(myHero.x, myHero.y, myHero.z, Spell.W.range, ARGB(Menu.Draw.W.color[1],Menu.Draw.W.color[2],Menu.Draw.W.color[3],Menu.Draw.W.color[4]))
-			end
-			if not WREADY and Menu.Draw.W.ac then
-				DrawCircleW(myHero.x, myHero.y, myHero.z, Spell.W.range, ARGB(Menu.Draw.W.colorac[1],Menu.Draw.W.colorac[2],Menu.Draw.W.colorac[3],Menu.Draw.W.colorac[4]))
-			end
-		else
-			if WREADY then
-				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.W.range, ARGB(Menu.Draw.W.color[1],Menu.Draw.W.color[2],Menu.Draw.W.color[3],Menu.Draw.W.color[4]))
-			end
-			if not WREADY and Menu.Draw.W.ac then
-				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.W.range, ARGB(Menu.Draw.W.colorac[1],Menu.Draw.W.colorac[2],Menu.Draw.W.colorac[3],Menu.Draw.W.colorac[4]))
-			end
-		end
+	if EREADY and Menu.draw.drawE then
+		DrawCircleN(myHero.x, myHero.y, myHero.z, Spell.E.range, ARGB(Menu.draw.eColor[1], Menu.draw.eColor[2], Menu.draw.eColor[3], Menu.draw.eColor[4]))
 	end
-	if Menu.Draw.E.draw then
-		if Menu.Draw.E.lfc then
-			if EREADY then
-				DrawCircleE(myHero.x, myHero.y, myHero.z, Spell.E.range, ARGB(Menu.Draw.E.color[1],Menu.Draw.E.color[2],Menu.Draw.E.color[3],Menu.Draw.E.color[4]))
-			end
-			if not EREADY and Menu.Draw.E.ac then
-				DrawCircleE(myHero.x, myHero.y, myHero.z, Spell.E.range, ARGB(Menu.Draw.E.colorac[1],Menu.Draw.E.colorac[2],Menu.Draw.E.colorac[3],Menu.Draw.E.colorac[4]))
-			end
-		else
-			if EREADY then
-				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.E.range, ARGB(Menu.Draw.E.color[1],Menu.Draw.E.color[2],Menu.Draw.E.color[3],Menu.Draw.E.color[4]))
-			end
-			if not EREADY and Menu.Draw.E.ac then
-				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.E.range, ARGB(Menu.Draw.E.colorac[1],Menu.Draw.E.colorac[2],Menu.Draw.E.colorac[3],Menu.Draw.E.colorac[4]))
-			end
-		end
-	end
-	if Menu.Draw.R.draw then
-		if Menu.Draw.R.lfc then
-			if RREADY then
-				DrawCircleR(myHero.x, myHero.y, myHero.z, Spell.R.range, ARGB(Menu.Draw.R.color[1],Menu.Draw.R.color[2],Menu.Draw.R.color[3],Menu.Draw.R.color[4]))
-			end
-			if not RREADY and Menu.Draw.R.ac then
-				DrawCircleR(myHero.x, myHero.y, myHero.z, Spell.R.range, ARGB(Menu.Draw.R.colorac[1],Menu.Draw.R.colorac[2],Menu.Draw.R.colorac[3],Menu.Draw.R.colorac[4]))
-			end
-		else
-			if RREADY then
-				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.R.range, ARGB(Menu.Draw.R.color[1],Menu.Draw.R.color[2],Menu.Draw.R.color[3],Menu.Draw.R.color[4]))
-			end
-			if not RREADY and Menu.Draw.R.ac then
-				DrawCircle(myHero.x, myHero.y, myHero.z, Spell.R.range, ARGB(Menu.Draw.R.colorac[1],Menu.Draw.R.colorac[2],Menu.Draw.R.colorac[3],Menu.Draw.R.colorac[4]))
-			end
-		end
+	if RREADY and Menu.draw.drawR then
+		DrawCircleN(myHero.x, myHero.y, myHero.z, Spell.R.range, ARGB(Menu.draw.rColor[1], Menu.draw.rColor[2], Menu.draw.rColor[3], Menu.draw.rColor[4]))
 	end
 end
 
@@ -475,22 +368,22 @@ end
 function Combo(unit)
  if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type then
        
-            if Menu.Combo.R and RREADY and GetDistance(unit) <= Spell.R.range then CastR(unit) end
-                if Menu.Combo.E and EREADY and GetDistance(unit) <= Spell.E.range then CastE(unit) end
+            if Menu.Combo.R then CastR(unit) end
+                if Menu.Combo.E then CastE(unit) end
                 if charmCheck() then return end
                 if Menu.Combo.I then UseItems(unit) end
-                if Menu.Combo.Q and QREADY and GetDistance(unit) <= Spell.Q.range then CastQ(unit) end
-                if Menu.Combo.W and WREADY and GetDistance(unit) <= Spell.W.range then CastW(unit) end
+                if Menu.Combo.Q then CastQ(unit) end
+                if Menu.Combo.W then CastW(unit) end
         end
  end
  
  -- Harass function --
 function Harass(unit)
         if ValidTarget(unit) and unit ~= nil and unit.type == myHero.type and not IsMyManaLow() then
-                if Menu.Harass.E and EREADY then CastE(unit) end
+                if Menu.Harass.E then CastE(unit) end
                 if charmCheck() then return end
-                if Menu.Harass.Q and QREADY then CastQ(unit) end
-                if Menu.Harass.W and WREADY then CastW(unit) end
+                if Menu.Harass.Q then CastQ(unit) end
+                if Menu.Harass.W then CastW(unit) end
         end
 end
  
@@ -503,19 +396,7 @@ function IsMyManaLow()
         end
 end
  
--- Farming Function --
-function Farm()
-        EnemyMinion:update()
-        if myHero.mana/myHero.maxMana * 100 > Menu.Farm.Mana and ValidTarget(EnemyMinion.objects[1],Spell.Q.range) then
-                        if QREADY and Menu.Farm.Q then
-                                    local qDmg = getDmg("Q",EnemyMinion.objects[1],myHero)
-                                        if qDmg > EnemyMinion.objects[1].health then
-                                        SpellCast(_Q,EnemyMinion.objects[1])
-                                        end
-                                end
-             end
-           end
- 
+
 -- Use Items
 function UseItems(unit)
 if Menu.Combo.I and GetDistanceSqr(myHero,Target) <= 750 * 750 then
@@ -558,7 +439,7 @@ function CastE(unit)
                          --PROdiction
                          elseif Menu.Predict.Mode == 2 then
                                local pos, info = Prodiction.GetPrediction(unit, Spell.E.range, Spell.E.speed, Spell.E.delay, Spell.E.width)
-		                       if pos and not info.mCollision() then
+		                       if pos and not info.collision() then
 			                   CastSpell(_E, pos.x, pos.z)
 		                       end       
                          end
@@ -661,6 +542,38 @@ function MaxRange()
 end
 --}
 
+function SkinHack()
+if not VIP_USER then return end
+	if Menu.Extra.skin ~= lastSkin then
+		lastSkin = Menu.Extra.skin
+		GenModelPacket("Ahri", Menu.Extra.skin)
+	end
+end
+function GenModelPacket(champ, skinId)
+	p = CLoLPacket(0x97)
+	p:EncodeF(myHero.networkID)
+	p.pos = 1
+	t1 = p:Decode1()
+	t2 = p:Decode1()
+	t3 = p:Decode1()
+	t4 = p:Decode1()
+	p:Encode1(t1)
+	p:Encode1(t2)
+	p:Encode1(t3)
+	p:Encode1(bit32.band(t4,0xB))
+	p:Encode1(1)--hardcode 1 bitfield
+	p:Encode4(skinId)
+	for i = 1, #champ do
+		p:Encode1(string.byte(champ:sub(i,i)))
+	end
+	for i = #champ + 1, 64 do
+		p:Encode1(0)
+	end
+	p:Hide()
+	RecvPacket(p)
+end
+
+
 --{ Lag Free circle credits: vadash,ViceVersa,barasia283
 --AA Range Circle Quality
 function DrawCircleNextLvlAA(x, y, z, radius, width, color, chordlength)
@@ -698,6 +611,16 @@ function DrawCircleNextLvlQ(x, y, z, radius, width, color, chordlength)
 	end
 	DrawLines2(points, width or 1, color or 4294967295)
 end
+
+function DrawCircleN(x, y, z, range, color)
+	if Menu.draw.enabled then
+		DrawCircle3D(x, y, z, range, Menu.draw.width, color, Menu.draw.qual)
+	end
+	if not Menu.draw.enabled then
+		DrawCircle(x, y, z, range, color)
+	end
+end
+
 --Q Range Circle Width
 function DrawCircleQ(x, y, z, radius, color)
 	local vPos1 = Vector(x, y, z)
